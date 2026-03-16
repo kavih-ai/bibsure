@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CiteCheck — AI Citation Validator</title>
+  <meta name="description" content="Validate research paper citations instantly. Detect fake AI-generated references in .bib, .ris, and PDF files." />
+
+  <!-- PDF.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Vercel Analytics -->
+  <script defer src="/_vercel/insights/script.js"></script>
+
+  <style>
+    /* ── Variables ── */
+    :root {
+      --bg: #f0f4f8;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --accent: #1d4ed8;
+      --accent-light: #eff6ff;
+      --accent-hover: #1e40af;
+      --text: #1e293b;
+      --muted: #64748b;
+      --verified: #16a34a;
+      --verified-bg: #f0fdf4;
+      --notfound: #dc2626;
+      --notfound-bg: #fef2f2;
+      --partial: #d97706;
+      --partial-bg: #fffbeb;
+      --unknown: #6b7280;
+      --unknown-bg: #f9fafb;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .logo span { color: var(--text); }
+    .header-links { display: flex; align-items: center; gap: 16px; }
+    .header-links a {
+      font-size: 0.875rem;
+      color: var(--muted);
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .header-links a:hover { color: var(--accent); }
+    .bmc-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #FFDD00;
+      color: #000;
+      font-weight: 600;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: opacity .2s;
+      white-space: nowrap;
+    }
+    .bmc-btn:hover { opacity: 0.85; color: #000; }
+
+    /* ── Main ── */
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+    }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .hero h1 {
+      font-size: clamp(1.75rem, 4vw, 2.5rem);
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+    .badge-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+    .badge {
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 4px;
+      box-shadow: var(--shadow);
+      margin-bottom: 24px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--muted);
+      transition: all .2s;
+    }
+    .tab-btn.active {
+      background: var(--accent);
+      color: #fff;
+    }
+    .tab-btn:hover:not(.active) {
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── Upload Zone ── */
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      background: var(--card);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s;
+      position: relative;
+    }
+    .upload-zone:hover, .upload-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-light);
+    }
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+      width: 100%;
+      height: 100%;
+    }
+    .upload-icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .upload-zone h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 6px; }
+    .upload-zone p { font-size: 0.875rem; color: var(--muted); }
+    .file-types {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .file-type-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--bg);
+      color: var(--muted);
+      border: 1px solid var(--border);
+      font-family: monospace;
+    }
+
+    /* ── Paste Area ── */
+    .paste-area {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .paste-area label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+    .paste-area textarea {
+      width: 100%;
+      height: 200px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.8rem;
+      resize: vertical;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .paste-area textarea:focus { border-color: var(--accent); }
+    .format-hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    /* ── Validate Button ── */
+    .validate-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .validate-btn:hover { background: var(--accent-hover); }
+    .validate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Progress ── */
+    .progress-bar-wrap {
+      background: var(--border);
+      border-radius: 99px;
+      height: 6px;
+      margin: 16px 0 8px;
+      overflow: hidden;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width .3s;
+      width: 0%;
+    }
+    .progress-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* ── Summary ── */
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .summary-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+    .summary-card .num {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+    .summary-card .lbl {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+    .summary-card.verified .num { color: var(--verified); }
+    .summary-card.notfound .num { color: var(--notfound); }
+    .summary-card.partial .num { color: var(--partial); }
+    .summary-card.total .num { color: var(--accent); }
+
+    /* ── Results ── */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .results-header h2 { font-size: 1.1rem; font-weight: 700; }
+    .export-btn {
+      padding: 7px 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text);
+      transition: all .2s;
+    }
+    .export-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    .citation-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .citation-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px 20px;
+      border-left: 4px solid var(--border);
+      transition: border-color .2s;
+    }
+    .citation-card.verified { border-left-color: var(--verified); }
+    .citation-card.not_found { border-left-color: var(--notfound); }
+    .citation-card.partial { border-left-color: var(--partial); }
+    .citation-card.checking { border-left-color: var(--accent); }
+
+    .citation-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .citation-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      flex: 1;
+    }
+    .citation-title a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .citation-title a:hover { text-decoration: underline; }
+
+    .status-badge {
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .status-badge.verified { background: var(--verified-bg); color: var(--verified); }
+    .status-badge.not_found { background: var(--notfound-bg); color: var(--notfound); }
+    .status-badge.partial { background: var(--partial-bg); color: var(--partial); }
+    .status-badge.checking { background: var(--accent-light); color: var(--accent); }
+    .status-badge.unknown { background: var(--unknown-bg); color: var(--unknown); }
+
+    .citation-meta {
+      margin-top: 6px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+    }
+    .citation-note {
+      margin-top: 8px;
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 6px;
+    }
+    .citation-note.verified { background: var(--verified-bg); color: var(--verified); }
+    .citation-note.not_found { background: var(--notfound-bg); color: var(--notfound); }
+    .citation-note.partial { background: var(--partial-bg); color: var(--partial); }
+
+    .confidence-bar-wrap {
+      height: 3px;
+      background: var(--border);
+      border-radius: 99px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+    .confidence-bar {
+      height: 100%;
+      border-radius: 99px;
+    }
+    .confidence-bar.verified { background: var(--verified); }
+    .confidence-bar.partial { background: var(--partial); }
+    .confidence-bar.not_found { background: var(--notfound); }
+
+    /* ── Empty / Error states ── */
+    .state-msg {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--muted);
+    }
+    .state-msg .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .state-msg p { font-size: 0.9rem; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 32px 20px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: var(--card);
+    }
+    footer a { color: var(--muted); text-decoration: none; margin: 0 8px; }
+    footer a:hover { color: var(--accent); }
+
+    /* ── Spinner ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    .spinner.dark {
+      border-color: rgba(29,78,216,0.2);
+      border-top-color: var(--accent);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .tabs { flex-direction: column; }
+      .citation-top { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <a class="logo" href="/">🔍 <span>Cite</span>Check</a>
+  <div class="header-links">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a class="bmc-btn" href="https://buymeacoffee.com/kavihai" target="_blank" rel="noopener">
+      ☕ Buy us a coffee
+    </a>
+  </div>
+</header>
+
+<!-- ── Main ── -->
+<main>
+
+  <!-- Hero -->
+  <div class="hero">
+    <h1>Detect <span>Fake Citations</span> Instantly</h1>
+    <p>Validate research paper references against 150M+ real publications. Catch AI-hallucinated citations before they cause damage.</p>
+    <div class="badge-row">
+      <span class="badge">✓ .bib files</span>
+      <span class="badge">✓ .ris files</span>
+      <span class="badge">✓ PDF papers</span>
+      <span class="badge">✓ CrossRef verified</span>
+      <span class="badge">✓ Free & private</span>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs" role="tablist">
+    <button class="tab-btn active" role="tab" data-tab="file">📂 Upload .bib / .ris</button>
+    <button class="tab-btn" role="tab" data-tab="pdf">📄 Upload PDF</button>
+    <button class="tab-btn" role="tab" data-tab="paste">✏️ Paste Citations</button>
+  </div>
+
+  <!-- Tab: File -->
+  <div class="tab-panel active" id="tab-file">
+    <div class="upload-zone" id="fileZone">
+      <input type="file" id="fileInput" accept=".bib,.ris" />
+      <div class="upload-icon">📑</div>
+      <h3>Drop your bibliography file here</h3>
+      <p>or click to browse</p>
+      <div class="file-types">
+        <span class="file-type-badge">.bib</span>
+        <span class="file-type-badge">.ris</span>
+      </div>
+    </div>
+    <button class="validate-btn" id="validateFileBtn" disabled>
+      🔍 Validate Citations
+    </button>
+  </div>
+
+  <!-- Tab: PDF -->
+  <div class="tab-panel" id="tab-pdf">
+    <div class="upload-zone" id="pdfZone">
+      <input type="file" id="pdfInput" accept=".pdf" />
+      <div class="upload-icon">📄</div>
+      <h3>Drop your research paper PDF here</h3>
+      <p>References will be extracted and validated automatically</p>
+      <div class="file-types">
+        <span class="file-type-badge">.pdf</span>
+      </div>
+    </div>
+    <button class="validate-btn" id="validatePdfBtn" disabled>
+      🔍 Extract &amp; Validate Citations
+    </button>
+  </div>
+
+  <!-- Tab: Paste -->
+  <div class="tab-panel" id="tab-paste">
+    <div class="paste-area">
+      <label for="pasteInput">Paste your citations below</label>
+      <textarea id="pasteInput" placeholder="Paste BibTeX entries (@article{...}) or RIS format (TY - JOUR...) here"></textarea>
+      <p class="format-hint">Supports BibTeX (@article, @book, @inproceedings…) and RIS format (TY - JOUR…)</p>
+    </div>
+    <button class="validate-btn" id="validatePasteBtn">
+      🔍 Validate Citations
+    </button>
+  </div>
+
+  <!-- Progress -->
+  <div id="progressSection" style="display:none; margin-top:24px;">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <p class="progress-label" id="progressLabel">Validating…</p>
+  </div>
+
+  <!-- Results -->
+  <div id="resultsSection" style="display:none; margin-top:32px;">
+    <div class="summary" id="summaryCards"></div>
+    <div class="results-header">
+      <h2 id="resultsTitle">Results</h2>
+      <button class="export-btn" id="exportCsvBtn">⬇ Export CSV</button>
+    </div>
+    <div class="citation-list" id="citationList"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="emptyState" style="display:none;">
+    <div class="state-msg">
+      <div class="icon">🔎</div>
+      <p>No citations found in this file. Check the format and try again.</p>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>© 2026 Kavih AI Technologies Pvt. Ltd.</p>
+  <p style="margin-top:6px;">
+    <a href="privacy.html">Privacy Policy</a>·
+    <a href="terms.html">Terms of Use</a>·
+    <a href="mailto:contact@kavihai.com">Contact</a>
+  </p>
+</footer>
+
+<script>
+'use strict';
+
+// ── PDF.js worker ──
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc =
+    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+// ── State ──
+let parsedCitations = [];
+let validationResults = [];
+let activeTab = 'file';
+let fileLoaded = null;
+
+// ── Tab switching ──
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab = btn.dataset.tab;
+    document.getElementById('tab-' + activeTab).classList.add('active');
+    hideResults();
+  });
+});
+
+// ── Drag & drop ──
+function setupDropZone(zone, inputId) {
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFileSelect(file, inputId === 'fileInput' ? 'bib-ris' : 'pdf');
+  });
+}
+setupDropZone(document.getElementById('fileZone'), 'fileInput');
+setupDropZone(document.getElementById('pdfZone'), 'pdfInput');
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  if (e.target.files[0]) handleFileSelect(e.target.files[0], 'bib-ris');
+});
+document.getElementById('pdfInput').addEventListener('change', e => {
+  if (e.target.files[0]) handleFileSelect(e.target.files[0], 'pdf');
+});
+
+function handleFileSelect(file, type) {
+  fileLoaded = { file, type };
+  const zone = type === 'pdf' ? document.getElementById('pdfZone') : document.getElementById('fileZone');
+  zone.querySelector('h3').textContent = '✅ ' + file.name;
+  zone.querySelector('p').textContent = (file.size / 1024).toFixed(1) + ' KB — ready to validate';
+  if (type === 'pdf') {
+    document.getElementById('validatePdfBtn').disabled = false;
+  } else {
+    document.getElementById('validateFileBtn').disabled = false;
+  }
+}
+
+// ── Validate buttons ──
+document.getElementById('validateFileBtn').addEventListener('click', () => runValidation('file'));
+document.getElementById('validatePdfBtn').addEventListener('click', () => runValidation('pdf'));
+document.getElementById('validatePasteBtn').addEventListener('click', () => runValidation('paste'));
+
+// ── BibTeX Parser ──
+function parseBib(text) {
+  const entries = [];
+  // Match @type{key, fields...}
+  const entryRegex = /@(\w+)\s*\{\s*([^,\s]+)\s*,([^@]*?)(?=\n\s*@|\s*$)/gs;
+  let m;
+  while ((m = entryRegex.exec(text)) !== null) {
+    const type = m[1].toLowerCase();
+    if (type === 'string' || type === 'preamble' || type === 'comment') continue;
+    const key = m[2].trim();
+    const body = m[3];
+    const fields = {};
+    // Match field = {value} or field = "value" or field = number
+    const fReg = /(\w+)\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|"([^"]*)"|(\d+))/g;
+    let f;
+    while ((f = fReg.exec(body)) !== null) {
+      const fname = f[1].toLowerCase();
+      const fval = (f[2] !== undefined ? f[2] : (f[3] !== undefined ? f[3] : f[4])).trim();
+      fields[fname] = fval;
+    }
+    if (Object.keys(fields).length > 0) {
+      entries.push({ type, key, ...fields, _format: 'bib' });
+    }
+  }
+  return entries;
+}
+
+// ── RIS Parser ──
+function parseRis(text) {
+  const entries = [];
+  const lines = text.split(/\r?\n/);
+  let current = null;
+  const fieldMap = {
+    TI: 'title', T1: 'title', CT: 'title', BT: 'title',
+    AU: 'author', A1: 'author', A2: 'author',
+    PY: 'year', Y1: 'year',
+    JO: 'journal', JF: 'journal', T2: 'journal', J2: 'journal',
+    DO: 'doi',
+    UR: 'url', LK: 'url',
+    AB: 'abstract', N2: 'abstract',
+    PB: 'publisher',
+    VL: 'volume', IS: 'issue',
+    SP: 'startPage', EP: 'endPage',
+    SN: 'issn',
+  };
+  for (const line of lines) {
+    const m = line.match(/^([A-Z][A-Z0-9])\s{1,2}-\s+(.*)/);
+    if (!m) continue;
+    const [, tag, val] = m;
+    if (tag === 'TY') {
+      current = { type: val.trim(), _format: 'ris' };
+    } else if (tag === 'ER' && current) {
+      if (current.title || current.doi) entries.push(current);
+      current = null;
+    } else if (current) {
+      if (tag === 'AU' || tag === 'A1' || tag === 'A2') {
+        current.author = current.author ? current.author + '; ' + val.trim() : val.trim();
+      } else if (fieldMap[tag]) {
+        current[fieldMap[tag]] = val.trim();
+      }
+    }
+  }
+  if (current && (current.title || current.doi)) entries.push(current);
+  return entries;
+}
+
+// ── Auto-detect format ──
+function detectAndParse(text) {
+  const t = text.trim();
+  if (t.startsWith('@') || /@\w+\s*\{/.test(t)) return parseBib(t);
+  if (/^TY\s+-\s+/m.test(t)) return parseRis(t);
+  return [];
+}
+
+// ── PDF text extraction ──
+async function extractPdfText(file) {
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  let text = '';
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    text += content.items.map(it => it.str).join(' ') + '\n';
+  }
+  return text;
+}
+
+// ── Extract references from PDF text ──
+function extractRefsFromPdfText(text) {
+  // Find references/bibliography section
+  const refSection = text.match(
+    /(?:^|\n)\s*(?:references|bibliography|works cited|literature cited|reference list)\s*\n([\s\S]+?)(?:\n\s*(?:appendix|supplementary|acknowledgements|about the authors)\s*\n|$)/i
+  );
+  const body = refSection ? refSection[1] : text;
+
+  // Split by numbered entries: [1], 1., (1), etc.
+  const chunks = body.split(/(?:\n|^)\s*(?:\[\d+\]|\d+\.|[\(\[]\d+[\)\]])\s+/);
+
+  const citations = [];
+  for (const chunk of chunks) {
+    if (chunk.trim().length < 20) continue;
+    const c = parseInlineRef(chunk.trim());
+    if (c) citations.push({ ...c, _format: 'pdf' });
+  }
+  return citations;
+}
+
+// ── Parse a single inline reference string ──
+function parseInlineRef(text) {
+  const result = { raw: text };
+
+  // DOI
+  const doiM = text.match(/\b(10\.\d{4,}\/\S+)/);
+  if (doiM) result.doi = doiM[1].replace(/[.,;)\]]+$/, '');
+
+  // URL
+  const urlM = text.match(/https?:\/\/[^\s,)]+/);
+  if (urlM) result.url = urlM[0];
+
+  // Year
+  const yearM = text.match(/\b(19|20)\d{2}\b/);
+  if (yearM) result.year = yearM[0];
+
+  // Title: text in quotes or italic signals
+  const quotedM = text.match(/["""]([^"""]{10,})["""]/);
+  if (quotedM) {
+    result.title = quotedM[1].trim();
+  } else {
+    // Heuristic: after authors (usually first 60 chars), take next sentence-like chunk
+    const parts = text.split(/\.\s+/);
+    if (parts.length >= 2) result.title = parts[1].replace(/["""]/g, '').trim().substring(0, 150);
+  }
+
+  // Authors: typically before year or first period
+  const beforeYear = yearM ? text.substring(0, text.indexOf(yearM[0])) : text.substring(0, 80);
+  result.author = beforeYear.replace(/["""]/g, '').trim().substring(0, 100);
+
+  return result.title || result.doi ? result : null;
+}
+
+// ── CrossRef API validation ──
+const CROSSREF_BASE = 'https://api.crossref.org';
+const CROSSREF_EMAIL = 'contact@kavihai.com'; // polite pool
+
+async function validateOne(citation) {
+  // 1. Direct DOI lookup
+  if (citation.doi) {
+    const doi = citation.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//, '');
+    try {
+      const res = await fetch(`${CROSSREF_BASE}/works/${encodeURIComponent(doi)}`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        return scoreMatch(citation, data.message, 'doi');
+      } else if (res.status === 404) {
+        return { status: 'not_found', confidence: 0, note: 'DOI not found in CrossRef — likely fake or incorrect.' };
+      }
+    } catch (_) {}
+  }
+
+  // 2. Title + author search
+  if (citation.title && citation.title.length > 10) {
+    const q = encodeURIComponent((citation.title + ' ' + (citation.author || '')).substring(0, 200));
+    try {
+      const res = await fetch(
+        `${CROSSREF_BASE}/works?query.bibliographic=${q}&rows=1&select=title,author,published,DOI,container-title,type`,
+        { headers: { 'Accept': 'application/json' } }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        const items = data.message?.items || [];
+        if (items.length > 0) return scoreMatch(citation, items[0], 'search');
+        return { status: 'not_found', confidence: 0, note: 'No match found in CrossRef. This citation may be AI-generated or contain errors.' };
+      }
+    } catch (_) {}
+  }
+
+  return { status: 'unknown', confidence: -1, note: 'Insufficient metadata to validate this entry.' };
+}
+
+// ── Score match between local citation and CrossRef record ──
+function scoreMatch(citation, work, method) {
+  const crTitle = (work.title?.[0] || '').toLowerCase();
+  const localTitle = (citation.title || '').toLowerCase();
+
+  const titleSim = stringSimilarity(crTitle, localTitle);
+
+  // Year check
+  const crYear = work.published?.['date-parts']?.[0]?.[0];
+  const localYear = parseInt(citation.year, 10);
+  const yearOk = !localYear || !crYear || Math.abs(crYear - localYear) <= 1;
+
+  // DOI from crossref
+  const foundDoi = work.DOI || null;
+
+  let confidence = Math.round(titleSim * 100);
+  if (method === 'doi') confidence = Math.max(confidence, 95);
+  if (!yearOk) confidence = Math.max(0, confidence - 15);
+
+  let status, note;
+  if (confidence >= 80) {
+    status = 'verified';
+    note = `✓ Matched in CrossRef${foundDoi ? ' — DOI: ' + foundDoi : ''}`;
+  } else if (confidence >= 40) {
+    status = 'partial';
+    note = `⚠ Partial match (${confidence}% similar). Check title/year carefully.${!yearOk ? ' Year mismatch: expected ' + crYear + ', found ' + localYear + '.' : ''}`;
+  } else {
+    status = 'not_found';
+    note = `✗ Title too different from CrossRef records (${confidence}% match). Likely fake or heavily misquoted.`;
+  }
+
+  return { status, confidence, note, foundDoi, crYear };
+}
+
+// ── Simple word-overlap similarity ──
+function stringSimilarity(a, b) {
+  if (!a || !b) return 0;
+  const norm = s => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
+  const wordsA = new Set(norm(a).split(/\s+/).filter(w => w.length > 3));
+  const wordsB = new Set(norm(b).split(/\s+/).filter(w => w.length > 3));
+  if (wordsA.size === 0 && wordsB.size === 0) return 1;
+  if (wordsA.size === 0 || wordsB.size === 0) return 0;
+  const inter = [...wordsA].filter(w => wordsB.has(w)).length;
+  return inter / Math.max(wordsA.size, wordsB.size);
+}
+
+// ── Small delay to respect CrossRef rate limits ──
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ── Main validation flow ──
+async function runValidation(source) {
+  hideResults();
+  parsedCitations = [];
+  validationResults = [];
+
+  // Parse
+  try {
+    if (source === 'file') {
+      if (!fileLoaded || fileLoaded.type !== 'bib-ris') return;
+      const text = await fileLoaded.file.text();
+      const ext = fileLoaded.file.name.split('.').pop().toLowerCase();
+      parsedCitations = ext === 'bib' ? parseBib(text) : (ext === 'ris' ? parseRis(text) : detectAndParse(text));
+    } else if (source === 'pdf') {
+      if (!fileLoaded || fileLoaded.type !== 'pdf') return;
+      if (typeof pdfjsLib === 'undefined') {
+        alert('PDF.js failed to load. Please refresh and try again.');
+        return;
+      }
+      const text = await extractPdfText(fileLoaded.file);
+      parsedCitations = extractRefsFromPdfText(text);
+    } else {
+      const text = document.getElementById('pasteInput').value.trim();
+      if (!text) return;
+      parsedCitations = detectAndParse(text);
+    }
+  } catch (err) {
+    alert('Error reading file: ' + err.message);
+    return;
+  }
+
+  if (parsedCitations.length === 0) {
+    document.getElementById('emptyState').style.display = 'block';
+    return;
+  }
+
+  // Show progress
+  showProgress(0, parsedCitations.length);
+  document.getElementById('resultsSection').style.display = 'block';
+  renderSummary(0, 0, 0, parsedCitations.length);
+  renderCitationsShell();
+
+  // Validate each one
+  for (let i = 0; i < parsedCitations.length; i++) {
+    const c = parsedCitations[i];
+    updateCitationCard(i, 'checking', null);
+    const result = await validateOne(c);
+    validationResults[i] = result;
+    updateCitationCard(i, result.status, result);
+    showProgress(i + 1, parsedCitations.length);
+
+    const counts = countResults();
+    renderSummary(counts.verified, counts.notFound, counts.partial, parsedCitations.length);
+
+    if (i < parsedCitations.length - 1) await sleep(120); // be polite to CrossRef
+  }
+
+  showProgress(parsedCitations.length, parsedCitations.length);
+  setTimeout(() => { document.getElementById('progressSection').style.display = 'none'; }, 1000);
+}
+
+function countResults() {
+  const verified = validationResults.filter(r => r?.status === 'verified').length;
+  const notFound = validationResults.filter(r => r?.status === 'not_found').length;
+  const partial = validationResults.filter(r => r?.status === 'partial').length;
+  return { verified, notFound, partial };
+}
+
+// ── UI helpers ──
+function hideResults() {
+  document.getElementById('resultsSection').style.display = 'none';
+  document.getElementById('progressSection').style.display = 'none';
+  document.getElementById('emptyState').style.display = 'none';
+}
+
+function showProgress(done, total) {
+  const section = document.getElementById('progressSection');
+  section.style.display = 'block';
+  const pct = total > 0 ? (done / total) * 100 : 0;
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    done < total ? `Checking ${done + 1} of ${total}…` : `Done — ${total} citations checked`;
+}
+
+function renderSummary(verified, notFound, partial, total) {
+  document.getElementById('summaryCards').innerHTML = `
+    <div class="summary-card total"><div class="num">${total}</div><div class="lbl">Total</div></div>
+    <div class="summary-card verified"><div class="num">${verified}</div><div class="lbl">✓ Verified</div></div>
+    <div class="summary-card partial"><div class="num">${partial}</div><div class="lbl">⚠ Partial</div></div>
+    <div class="summary-card notfound"><div class="num">${notFound}</div><div class="lbl">✗ Not Found</div></div>
+  `;
+}
+
+function citationDisplayTitle(c) {
+  return c.title || c.raw?.substring(0, 80) || c.key || 'Untitled entry';
+}
+
+function renderCitationsShell() {
+  const list = document.getElementById('citationList');
+  list.innerHTML = parsedCitations.map((c, i) => `
+    <div class="citation-card checking" id="cite-${i}">
+      <div class="citation-top">
+        <div class="citation-title">${escHtml(citationDisplayTitle(c))}</div>
+        <span class="status-badge checking"><span class="spinner dark"></span></span>
+      </div>
+      <div class="citation-meta">
+        ${c.author ? `<span>👤 ${escHtml(c.author.substring(0, 60))}${c.author.length > 60 ? '…' : ''}</span>` : ''}
+        ${c.year ? `<span>📅 ${escHtml(c.year)}</span>` : ''}
+        ${c.journal ? `<span>📖 ${escHtml(c.journal.substring(0, 50))}</span>` : ''}
+        ${c.doi ? `<span>🔗 ${escHtml(c.doi)}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateCitationCard(i, status, result) {
+  const card = document.getElementById('cite-' + i);
+  if (!card) return;
+  const c = parsedCitations[i];
+  const statusLabel = {
+    verified: '✓ Verified',
+    not_found: '✗ Not Found',
+    partial: '⚠ Partial Match',
+    checking: 'Checking…',
+    unknown: '? Unknown'
+  }[status] || status;
+
+  const doiLink = result?.foundDoi
+    ? `<a href="https://doi.org/${result.foundDoi}" target="_blank" rel="noopener">doi.org/${result.foundDoi}</a>`
+    : (c.doi ? `<span>${escHtml(c.doi)}</span>` : '');
+
+  card.className = 'citation-card ' + status.replace('_', '');
+  card.innerHTML = `
+    <div class="citation-top">
+      <div class="citation-title">
+        ${result?.foundDoi
+          ? `<a href="https://doi.org/${result.foundDoi}" target="_blank" rel="noopener">${escHtml(citationDisplayTitle(c))}</a>`
+          : escHtml(citationDisplayTitle(c))
+        }
+      </div>
+      <span class="status-badge ${status.replace('_','')}">${statusLabel}</span>
+    </div>
+    <div class="citation-meta">
+      ${c.author ? `<span>👤 ${escHtml(c.author.substring(0, 60))}${c.author.length > 60 ? '…' : ''}</span>` : ''}
+      ${c.year ? `<span>📅 ${escHtml(c.year)}</span>` : ''}
+      ${c.journal ? `<span>📖 ${escHtml(c.journal.substring(0, 50))}</span>` : ''}
+      ${doiLink ? `<span>🔗 ${doiLink}</span>` : ''}
+    </div>
+    ${result?.note ? `<div class="citation-note ${status.replace('_','')}">${escHtml(result.note)}</div>` : ''}
+    ${result && result.confidence >= 0 ? `
+      <div class="confidence-bar-wrap">
+        <div class="confidence-bar ${status.replace('_','')}" style="width:${result.confidence}%"></div>
+      </div>
+    ` : ''}
+  `;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── Export CSV ──
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+  if (!parsedCitations.length) return;
+  const rows = [['#', 'Title', 'Authors', 'Year', 'Journal', 'DOI', 'Status', 'Confidence', 'Note']];
+  parsedCitations.forEach((c, i) => {
+    const r = validationResults[i] || {};
+    rows.push([
+      i + 1,
+      c.title || '',
+      c.author || '',
+      c.year || '',
+      c.journal || '',
+      r.foundDoi || c.doi || '',
+      r.status || '',
+      r.confidence >= 0 ? r.confidence + '%' : '',
+      r.note || ''
+    ]);
+  });
+  const csv = rows.map(r => r.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'citecheck-results.csv';
+  a.click();
+});
+</script>
+
+</body>
+</html>
