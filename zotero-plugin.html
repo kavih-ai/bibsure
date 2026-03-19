@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CiteCheck — Zotero Plugin</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif; font-size: 13px; background: #fff; color: #000; }
+    header { background: #000; padding: 4px 12px; display: flex; align-items: center; justify-content: space-between; height: 44px; }
+    .logo { color: #fff; font-weight: 700; font-size: 1rem; text-decoration: none; letter-spacing: 1px; }
+    .back-btn { color: #ccc; font-size: 0.78rem; text-decoration: none; border: 1px solid #555; padding: 3px 8px; }
+    main { max-width: 860px; margin: 20px auto; padding: 0 14px 60px; }
+    .win-window { background: #d4d0c8; border-top: 2px solid #fff; border-left: 2px solid #fff; border-bottom: 2px solid #808080; border-right: 2px solid #808080; margin-bottom: 16px; }
+    .win-titlebar { background: #000; padding: 3px 8px; display: flex; align-items: center; justify-content: space-between; }
+    .win-title { color: #fff; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+    .win-ctrl { width: 16px; height: 14px; background: #d4d0c8; border-top: 1px solid #fff; border-left: 1px solid #fff; border-bottom: 1px solid #808080; border-right: 1px solid #808080; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; color: #000; cursor: pointer; }
+    .win-body { padding: 14px; }
+    h1 { font-size: 1.4rem; font-family: 'VT323', monospace; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+    h2 { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 6px; border-bottom: 1px solid #000; padding-bottom: 3px; }
+    p { font-size: 0.82rem; color: #222; line-height: 1.6; margin-bottom: 8px; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; font-family: 'Courier New', monospace; font-size: 0.75rem; padding: 12px; border: 1px solid #555; line-height: 1.7; overflow-x: auto; margin: 8px 0; }
+    .step { display: flex; gap: 10px; margin-bottom: 10px; }
+    .step-num { min-width: 26px; height: 26px; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; flex-shrink: 0; }
+    .step-body { font-size: 0.82rem; line-height: 1.6; }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .feature-item { background: #fff; border: 1px solid #000; padding: 8px 10px; font-size: 0.78rem; }
+    .feature-item strong { display: block; font-size: 0.8rem; margin-bottom: 2px; }
+    .tag { display: inline-block; background: #000; color: #fff; font-size: 0.68rem; padding: 2px 6px; font-family: 'Courier New', monospace; margin: 2px; }
+    .download-btn { display: inline-flex; align-items: center; gap: 6px; background: #d4d0c8; color: #000; font-weight: 700; font-size: 0.82rem; padding: 6px 14px; text-decoration: none; border-top: 2px solid #fff; border-left: 2px solid #fff; border-bottom: 2px solid #808080; border-right: 2px solid #808080; margin: 8px 0; cursor: pointer; }
+    .download-btn:hover { background: #c4c0b8; }
+    footer { text-align: center; padding: 16px; font-size: 0.72rem; color: #555; border-top: 2px solid #808080; background: #d4d0c8; font-family: 'Courier New', monospace; }
+    footer a { color: #333; text-decoration: underline; margin: 0 6px; }
+  </style>
+</head>
+<body>
+<header>
+  <a class="logo" href="index.html">■ CiteCheck</a>
+  <a class="back-btn" href="index.html">← Back</a>
+</header>
+<main>
+
+  <div class="win-window">
+    <div class="win-titlebar">
+      <div class="win-title"><span>⬡</span> CiteCheck for Zotero — Installation Guide</div>
+      <div style="display:flex;gap:2px;"><div class="win-ctrl">_</div><div class="win-ctrl">□</div><div class="win-ctrl">×</div></div>
+    </div>
+    <div class="win-body">
+      <h1>⬡ Zotero Plugin</h1>
+      <p>CiteCheck integrates directly with your Zotero reference manager. Validate citations with a right-click, auto-tag suspicious entries, and batch-validate entire collections — all powered by CrossRef's 150M+ publication database.</p>
+
+      <h2>Features</h2>
+      <div class="feature-grid">
+        <div class="feature-item"><strong>Right-Click Validation</strong>Select items → Tools → CiteCheck → Validate</div>
+        <div class="feature-item"><strong>Auto-Tagging</strong>Tags items as "CiteCheck: Verified", "CiteCheck: Not Found" etc.</div>
+        <div class="feature-item"><strong>Batch Validation</strong>Validate your entire library or a specific collection at once</div>
+        <div class="feature-item"><strong>CrossRef Verified</strong>Real-time lookup against 150M+ academic publications</div>
+        <div class="feature-item"><strong>Zotero 6 & 7</strong>Compatible with both major Zotero versions</div>
+        <div class="feature-item"><strong>Progress Window</strong>Live progress with per-item status updates</div>
+      </div>
+
+      <h2>Installation</h2>
+      <div class="step"><div class="step-num">1</div><div class="step-body">Download the <code>citecheck-zotero.xpi</code> file below.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body">Open Zotero → <strong>Tools</strong> → <strong>Add-ons</strong>.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">Click the gear icon ⚙ → <strong>Install Add-on From File…</strong></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body">Select the downloaded <code>.xpi</code> file and click <strong>Install Now</strong>.</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body">Restart Zotero. CiteCheck will appear under <strong>Tools</strong> menu.</div></div>
+
+      <a class="download-btn" href="zotero-plugin/manifest.json" download="citecheck-zotero.json">⬇ Download Plugin Files (ZIP)</a>
+
+      <h2>Usage</h2>
+      <div class="step"><div class="step-num">→</div><div class="step-body">Select one or more items in your Zotero library.</div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body">Go to <strong>Tools → CiteCheck → Validate Selected Citations</strong>.</div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body">A progress window shows each citation being checked.</div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body">Results dialog shows summary. Items are auto-tagged in your library.</div></div>
+
+      <h2>Tags Applied</h2>
+      <span class="tag">CiteCheck: Verified</span>
+      <span class="tag">CiteCheck: Not Found</span>
+      <span class="tag">CiteCheck: Partial Match</span>
+      <span class="tag">CiteCheck: Unknown</span>
+
+      <h2>Plugin Source Code</h2>
+      <div class="code-block">// bootstrap.js — Main plugin entry point
+// Located at: zotero-plugin/src/bootstrap.js
+
+CiteCheck.validateSelected()
+  → parsedItems: Zotero.getActiveZoteroPane().getSelectedItems()
+  → CrossRef DOI lookup → title search fallback
+  → Tags items with validation status
+  → Shows results dialog
+
+// Auto-tagging example:
+item.addTag('CiteCheck: Verified', 1);  // type 1 = automatic
+await item.saveTx();</div>
+
+      <h2>Requirements</h2>
+      <p>Zotero 6.0+ or Zotero 7.x · Internet connection for CrossRef API · No API key required</p>
+    </div>
+  </div>
+
+</main>
+<footer>
+  <p>© 2026 Kavih AI Technologies Pvt. Ltd. &nbsp;|&nbsp; <a href="index.html">App</a> · <a href="demo.html">Demo</a> · <a href="vscode-plugin.html">VSCode</a></p>
+</footer>
+</body>
+</html>

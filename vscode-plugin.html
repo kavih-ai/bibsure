@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CiteCheck — VSCode Extension</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif; font-size: 13px; background: #fff; color: #000; }
+    header { background: #000; padding: 4px 12px; display: flex; align-items: center; justify-content: space-between; height: 44px; }
+    .logo { color: #fff; font-weight: 700; font-size: 1rem; text-decoration: none; }
+    .back-btn { color: #ccc; font-size: 0.78rem; text-decoration: none; border: 1px solid #555; padding: 3px 8px; }
+    main { max-width: 860px; margin: 20px auto; padding: 0 14px 60px; }
+    .win-window { background: #d4d0c8; border-top: 2px solid #fff; border-left: 2px solid #fff; border-bottom: 2px solid #808080; border-right: 2px solid #808080; margin-bottom: 16px; }
+    .win-titlebar { background: #000; padding: 3px 8px; display: flex; align-items: center; justify-content: space-between; }
+    .win-title { color: #fff; font-weight: 700; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+    .win-ctrl { width: 16px; height: 14px; background: #d4d0c8; border-top: 1px solid #fff; border-left: 1px solid #fff; border-bottom: 1px solid #808080; border-right: 1px solid #808080; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold; cursor: pointer; }
+    .win-body { padding: 14px; }
+    h1 { font-size: 1.4rem; font-family: 'VT323', monospace; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+    h2 { font-size: 0.88rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin: 14px 0 6px; border-bottom: 1px solid #000; padding-bottom: 3px; }
+    p { font-size: 0.82rem; color: #222; line-height: 1.6; margin-bottom: 8px; }
+    .code-block { background: #1e1e1e; color: #d4d4d4; font-family: 'Courier New', monospace; font-size: 0.75rem; padding: 12px; border: 1px solid #555; line-height: 1.7; overflow-x: auto; margin: 8px 0; }
+    .cmd { background: #e8e8e8; font-family: 'Courier New', monospace; font-size: 0.78rem; padding: 2px 6px; border: 1px solid #aaa; }
+    .step { display: flex; gap: 10px; margin-bottom: 10px; }
+    .step-num { min-width: 26px; height: 26px; background: #000; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.82rem; flex-shrink: 0; }
+    .step-body { font-size: 0.82rem; line-height: 1.6; }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 10px 0; }
+    .feature-item { background: #fff; border: 1px solid #000; padding: 8px 10px; font-size: 0.78rem; }
+    .feature-item strong { display: block; font-size: 0.8rem; margin-bottom: 2px; }
+    .setting-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px dashed #ccc; font-size: 0.78rem; }
+    .setting-key { font-family: 'Courier New', monospace; color: #333; }
+    .setting-val { font-weight: 700; }
+    footer { text-align: center; padding: 16px; font-size: 0.72rem; color: #555; border-top: 2px solid #808080; background: #d4d0c8; font-family: 'Courier New', monospace; }
+    footer a { color: #333; text-decoration: underline; margin: 0 6px; }
+  </style>
+</head>
+<body>
+<header>
+  <a class="logo" href="index.html">■ CiteCheck</a>
+  <a class="back-btn" href="index.html">← Back</a>
+</header>
+<main>
+
+  <div class="win-window">
+    <div class="win-titlebar">
+      <div class="win-title"><span>◈</span> CiteCheck for VSCode — Installation Guide</div>
+      <div style="display:flex;gap:2px;"><div class="win-ctrl">_</div><div class="win-ctrl">□</div><div class="win-ctrl">×</div></div>
+    </div>
+    <div class="win-body">
+      <h1>◈ VSCode Extension</h1>
+      <p>CiteCheck brings citation validation directly into your LaTeX/BibTeX workflow in VS Code. Get inline diagnostics, hover tooltips on <code>\cite{}</code> keys, real-time validation, and a dedicated results panel — without leaving your editor.</p>
+
+      <h2>Features</h2>
+      <div class="feature-grid">
+        <div class="feature-item"><strong>Inline Diagnostics</strong>Red/yellow squiggles on unverified or fake citations in .bib files</div>
+        <div class="feature-item"><strong>Hover Tooltips</strong>Hover over @key to see CrossRef match status, DOI, and confidence</div>
+        <div class="feature-item"><strong>Validate on Save</strong>Automatically checks citations when you save a .bib file</div>
+        <div class="feature-item"><strong>Status Bar</strong>Live count of verified / fake / partial citations in the status bar</div>
+        <div class="feature-item"><strong>Results Webview</strong>Full results panel with all citations, scores, and CrossRef links</div>
+        <div class="feature-item"><strong>Workspace Scan</strong>Validate all .bib files in your project at once</div>
+      </div>
+
+      <h2>Installation (Marketplace)</h2>
+      <div class="step"><div class="step-num">1</div><div class="step-body">Open VS Code → Extensions (Ctrl+Shift+X)</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body">Search for <strong>"CiteCheck"</strong> by kavihai</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body">Click <strong>Install</strong>. No restart required.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body">Open any <code>.bib</code> file — validation starts automatically.</div></div>
+
+      <h2>Installation (Manual / Dev)</h2>
+      <div class="code-block"># Clone the repo
+git clone https://github.com/kavihai/citecheck-vscode
+cd citecheck-vscode
+
+# Install dependencies
+npm install
+
+# Package the extension
+npx vsce package
+
+# Install the .vsix file
+code --install-extension citecheck-1.0.0.vsix</div>
+
+      <h2>Commands</h2>
+      <div class="code-block">Ctrl+Shift+P → CiteCheck: Validate Current .bib File
+Ctrl+Shift+P → CiteCheck: Validate Selected Citation
+Ctrl+Shift+P → CiteCheck: Validate All .bib Files in Workspace
+Ctrl+Shift+P → CiteCheck: Show Results Panel
+
+# Right-click menu in .bib files:
+→ CiteCheck: Validate Current .bib File
+→ CiteCheck: Validate Selected Citation</div>
+
+      <h2>Settings (settings.json)</h2>
+      <div class="setting-row"><span class="setting-key">citecheck.enableOnSave</span><span class="setting-val">true</span></div>
+      <div class="setting-row"><span class="setting-key">citecheck.confidenceThreshold</span><span class="setting-val">80</span></div>
+      <div class="setting-row"><span class="setting-key">citecheck.crossrefEmail</span><span class="setting-val">"your@email.com"</span></div>
+      <div class="setting-row"><span class="setting-key">citecheck.showInlineDecorations</span><span class="setting-val">true</span></div>
+      <div class="setting-row"><span class="setting-key">citecheck.rateLimitMs</span><span class="setting-val">120</span></div>
+
+      <h2>Extension Architecture</h2>
+      <div class="code-block">vscode-extension/
+├── package.json           ← Extension manifest, commands, settings
+├── src/
+│   └── extension.js       ← Main extension logic
+│       ├── activate()     ← Registration of commands, hover, events
+│       ├── validateDocument()  ← Parses .bib → CrossRef → diagnostics
+│       ├── parseBib()     ← BibTeX AST parser with Range tracking
+│       ├── validateOne()  ← CrossRef DOI / title lookup
+│       ├── scoreMatch()   ← Confidence scoring
+│       ├── provideHover() ← Hover tooltip provider
+│       ├── updateDecorations() ← Inline ✓/✗ icons
+│       └── showResultsPanel()  ← Webview HTML panel</div>
+
+      <h2>How It Works</h2>
+      <div class="step"><div class="step-num">→</div><div class="step-body">On file open/save, <code>parseBib()</code> extracts all <code>@article{}</code> entries with their source ranges.</div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body">Each citation is checked via CrossRef DOI lookup first, then title/author search as fallback.</div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body">Confidence is scored by title similarity + year match. Threshold defaults to 80%.</div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body">Diagnostics (red/yellow squiggles) are applied to the exact source range of each entry.</div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body">Status bar updates to show: <code>$(check-all) CiteCheck: 12 OK | 2 fake</code></div></div>
+
+      <h2>Requirements</h2>
+      <p>VS Code 1.85+ · Node.js 18+ (for development) · Internet connection · No API key required</p>
+    </div>
+  </div>
+
+</main>
+<footer>
+  <p>© 2026 Kavih AI Technologies Pvt. Ltd. &nbsp;|&nbsp; <a href="index.html">App</a> · <a href="demo.html">Demo</a> · <a href="zotero-plugin.html">Zotero</a></p>
+</footer>
+</body>
+</html>

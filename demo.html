@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CiteCheck — Interactive Demo</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+      font-size: 13px;
+      background: #ffffff;
+      color: #000000;
+      min-height: 100vh;
+    }
+
+    header {
+      background: #000000;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 44px;
+    }
+    .logo { color: #fff; font-weight: 700; font-size: 1rem; text-decoration: none; letter-spacing: 1px; }
+    .back-btn {
+      color: #ccc; font-size: 0.78rem; text-decoration: none; border: 1px solid #555;
+      padding: 3px 8px;
+    }
+    .back-btn:hover { color: #fff; border-color: #aaa; }
+
+    .demo-banner {
+      background: #000000;
+      color: #ffffff;
+      text-align: center;
+      padding: 6px;
+      font-size: 0.75rem;
+      font-family: 'Courier New', monospace;
+      letter-spacing: 0.5px;
+    }
+
+    main { max-width: 1000px; margin: 0 auto; padding: 20px 12px 60px; }
+
+    .win-window {
+      background: #d4d0c8;
+      border-top:    2px solid #ffffff;
+      border-left:   2px solid #ffffff;
+      border-bottom: 2px solid #808080;
+      border-right:  2px solid #808080;
+      margin-bottom: 16px;
+    }
+    .win-titlebar {
+      background: #000000;
+      padding: 3px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .win-title {
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .win-controls { display: flex; gap: 2px; }
+    .win-ctrl {
+      width: 16px; height: 14px;
+      background: #d4d0c8;
+      border-top: 1px solid #fff;
+      border-left: 1px solid #fff;
+      border-bottom: 1px solid #808080;
+      border-right: 1px solid #808080;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: bold; color: #000; cursor: pointer;
+    }
+    .win-body { padding: 14px; background: #d4d0c8; }
+
+    /* Demo intro */
+    .demo-intro {
+      background: #ffffff;
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-bottom: 2px solid #ffffff;
+      border-right: 2px solid #ffffff;
+      padding: 14px 18px;
+      margin-bottom: 14px;
+    }
+    .demo-intro h2 {
+      font-size: 1.1rem;
+      font-weight: 900;
+      font-family: 'VT323', 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
+    }
+    .demo-intro p { font-size: 0.82rem; color: #333; line-height: 1.5; }
+
+    /* Sample selector */
+    .sample-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+    .sample-btn {
+      padding: 5px 12px;
+      background: #d4d0c8;
+      border-top:    2px solid #ffffff;
+      border-left:   2px solid #ffffff;
+      border-bottom: 2px solid #808080;
+      border-right:  2px solid #808080;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: #000000;
+      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+    }
+    .sample-btn:hover { background: #c4c0b8; }
+    .sample-btn:active {
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-bottom: 2px solid #ffffff;
+      border-right: 2px solid #ffffff;
+    }
+    .sample-btn.active {
+      border-top: 2px solid #808080;
+      border-left: 2px solid #808080;
+      border-bottom: 2px solid #ffffff;
+      border-right: 2px solid #ffffff;
+      background: #bdb9b2;
+    }
+
+    /* Editor area */
+    .editor-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 680px) { .editor-wrap { grid-template-columns: 1fr; } }
+
+    .panel-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #000;
+      margin-bottom: 4px;
+      font-family: 'Courier New', monospace;
+      text-transform: uppercase;
+    }
+    .bib-editor {
+      width: 100%;
+      height: 220px;
+      border-top:    2px solid #808080;
+      border-left:   2px solid #808080;
+      border-bottom: 2px solid #ffffff;
+      border-right:  2px solid #ffffff;
+      padding: 8px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: #000000;
+      background: #ffffff;
+      resize: vertical;
+      outline: none;
+    }
+
+    /* Results panel */
+    .results-panel {
+      background: #ffffff;
+      border-top:    2px solid #808080;
+      border-left:   2px solid #808080;
+      border-bottom: 2px solid #ffffff;
+      border-right:  2px solid #ffffff;
+      height: 220px;
+      overflow-y: auto;
+      padding: 6px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.75rem;
+    }
+    .result-line {
+      padding: 5px 8px;
+      margin-bottom: 4px;
+      border-left: 3px solid #aaa;
+    }
+    .result-line.verified { border-left-color: #000000; background: #f0f0f0; }
+    .result-line.not_found { border-left-color: #808080; background: #e8e8e8; color: #555; }
+    .result-line.partial { border-left-color: #333333; border-left-style: dashed; background: #f5f5f5; }
+    .result-line.checking { border-left-color: #aaaaaa; border-left-style: dotted; color: #888; }
+    .result-title { font-weight: 700; font-size: 0.78rem; }
+    .result-status { font-size: 0.7rem; margin-top: 2px; }
+
+    .validate-btn {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; margin-top: 10px; padding: 7px;
+      background: #d4d0c8; color: #000;
+      border-top: 2px solid #fff; border-left: 2px solid #fff;
+      border-bottom: 2px solid #808080; border-right: 2px solid #808080;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
+    }
+    .validate-btn:hover { background: #c8c4bc; }
+    .validate-btn:active {
+      border-top: 2px solid #808080; border-left: 2px solid #808080;
+      border-bottom: 2px solid #fff; border-right: 2px solid #fff;
+    }
+
+    /* Progress */
+    .progress-wrap {
+      background: #ffffff;
+      border-top: 2px solid #808080; border-left: 2px solid #808080;
+      border-bottom: 2px solid #fff; border-right: 2px solid #fff;
+      height: 18px; margin: 8px 0 4px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: repeating-linear-gradient(90deg, #000 0,#000 8px, #555 8px, #555 16px);
+      width: 0%; transition: width 0.3s;
+    }
+    .progress-label { font-size: 0.72rem; font-family: 'Courier New', monospace; color: #333; text-align: center; }
+
+    /* Summary */
+    .summary-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .sum-card {
+      background: #d4d0c8;
+      border-top: 2px solid #fff; border-left: 2px solid #fff;
+      border-bottom: 2px solid #808080; border-right: 2px solid #808080;
+      text-align: center; padding: 8px 4px;
+    }
+    .sum-card .num {
+      font-size: 1.5rem; font-weight: 900;
+      font-family: 'VT323', 'Courier New', monospace;
+    }
+    .sum-card .lbl { font-size: 0.65rem; font-family: 'Courier New', monospace; color: #333; }
+
+    /* Plugin section */
+    .plugin-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    @media (max-width: 600px) { .plugin-grid { grid-template-columns: 1fr; } }
+
+    .plugin-card {
+      background: #ffffff;
+      border: 2px solid #000000;
+      padding: 14px;
+    }
+    .plugin-card h3 {
+      font-size: 0.88rem;
+      font-weight: 900;
+      font-family: 'VT323', 'Courier New', monospace;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4px;
+    }
+    .plugin-card p { font-size: 0.75rem; color: #333; line-height: 1.5; margin-bottom: 8px; }
+    .plugin-card ul { font-size: 0.72rem; color: #333; padding-left: 14px; line-height: 1.7; }
+    .plugin-tag {
+      display: inline-block;
+      font-size: 0.68rem;
+      padding: 2px 6px;
+      background: #000;
+      color: #fff;
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    /* Win separator */
+    .sep { height: 0; border-top: 1px solid #808080; border-bottom: 1px solid #fff; margin: 10px 4px; }
+
+    footer {
+      text-align: center; padding: 20px;
+      font-size: 0.72rem; color: #555;
+      border-top: 2px solid #808080;
+      background: #d4d0c8;
+      font-family: 'Courier New', monospace;
+    }
+    footer a { color: #333; text-decoration: underline; margin: 0 6px; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block; width: 10px; height: 10px;
+      border: 2px solid #ccc; border-top-color: #000;
+      border-radius: 50%; animation: spin .7s linear infinite;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="index.html">■ CiteCheck</a>
+  <a class="back-btn" href="index.html">← Back to App</a>
+</header>
+
+<div class="demo-banner">
+  ▶ INTERACTIVE DEMO — Try CiteCheck live with sample citations | Real CrossRef API validation
+</div>
+
+<main>
+
+  <!-- Demo Window -->
+  <div class="win-window">
+    <div class="win-titlebar">
+      <div class="win-title"><span>■</span> CiteCheck — Live Demo</div>
+      <div class="win-controls">
+        <div class="win-ctrl">_</div><div class="win-ctrl">□</div><div class="win-ctrl">×</div>
+      </div>
+    </div>
+    <div class="win-body">
+
+      <div class="demo-intro">
+        <h2>▶ Try It Now — Real Citation Validation</h2>
+        <p>Select a sample below or paste your own BibTeX. Click Validate to check against CrossRef's 150M+ publication database. Real results, no mock data.</p>
+      </div>
+
+      <!-- Sample Buttons -->
+      <div class="panel-label">Load Sample:</div>
+      <div class="sample-row">
+        <button class="sample-btn active" onclick="loadSample('mixed')" id="btn-mixed">Mixed (Real + Fake)</button>
+        <button class="sample-btn" onclick="loadSample('real')" id="btn-real">All Real Citations</button>
+        <button class="sample-btn" onclick="loadSample('fake')" id="btn-fake">AI-Hallucinated</button>
+        <button class="sample-btn" onclick="loadSample('hci')" id="btn-hci">HRI / HCI Papers</button>
+        <button class="sample-btn" onclick="clearEditor()" id="btn-custom">Custom (Clear)</button>
+      </div>
+
+      <!-- Editor + Results -->
+      <div class="editor-wrap">
+        <div>
+          <div class="panel-label">// BibTeX Input:</div>
+          <textarea class="bib-editor" id="bibInput" spellcheck="false" placeholder="Paste BibTeX here..."></textarea>
+        </div>
+        <div>
+          <div class="panel-label">// Validation Results:</div>
+          <div class="results-panel" id="resultsPanel">
+            <div style="color:#888; font-size:0.75rem; padding:4px;">[ Click "Run Validation" to start... ]</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div id="progressWrap" style="display:none;">
+        <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div></div>
+        <p class="progress-label" id="progressLabel">Starting...</p>
+      </div>
+
+      <button class="validate-btn" id="runBtn" onclick="runDemo()">▶ Run Validation</button>
+
+      <!-- Summary -->
+      <div class="summary-row" id="summaryRow">
+        <div class="sum-card"><div class="num" id="sTotal">0</div><div class="lbl">TOTAL</div></div>
+        <div class="sum-card"><div class="num" id="sVerified">0</div><div class="lbl">[OK] VERIFIED</div></div>
+        <div class="sum-card"><div class="num" id="sPartial">0</div><div class="lbl">[!!] PARTIAL</div></div>
+        <div class="sum-card"><div class="num" id="sNotFound">0</div><div class="lbl">[XX] NOT FOUND</div></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Plugin Demos Window -->
+  <div class="win-window">
+    <div class="win-titlebar">
+      <div class="win-title"><span>■</span> Plugin Ecosystem — Zotero & VSCode</div>
+      <div class="win-controls">
+        <div class="win-ctrl">_</div><div class="win-ctrl">□</div><div class="win-ctrl">×</div>
+      </div>
+    </div>
+    <div class="win-body">
+      <div class="plugin-grid">
+
+        <div class="plugin-card">
+          <h3>⬡ Zotero Plugin</h3>
+          <p>Validate citations directly from your Zotero library. Right-click any item and select CiteCheck to verify against CrossRef in real time.</p>
+          <ul>
+            <li>Validates selected items</li>
+            <li>Auto-tags: Verified / Not Found</li>
+            <li>Batch validate entire collection</li>
+            <li>Works with Zotero 6 & 7</li>
+            <li>Polite CrossRef API usage</li>
+          </ul>
+          <br>
+          <span class="plugin-tag">Zotero 6/7</span>
+          <a href="zotero-plugin.html" style="margin-left:8px; font-size:0.72rem; color:#000; text-decoration:underline;">Install Guide →</a>
+        </div>
+
+        <div class="plugin-card">
+          <h3>◈ VSCode Extension</h3>
+          <p>Real-time BibTeX linting inside VS Code. Inline diagnostics, hover tooltips on \cite{} keys, status bar indicator, and a results webview.</p>
+          <ul>
+            <li>Inline error/warning squiggles</li>
+            <li>Hover tooltips with DOI links</li>
+            <li>Validate on save (auto)</li>
+            <li>Status bar citation count</li>
+            <li>Results webview panel</li>
+          </ul>
+          <br>
+          <span class="plugin-tag">VSCode 1.85+</span>
+          <a href="vscode-plugin.html" style="margin-left:8px; font-size:0.72rem; color:#000; text-decoration:underline;">Install Guide →</a>
+        </div>
+
+        <div class="plugin-card">
+          <h3>🌐 Web App</h3>
+          <p>Upload .bib, .ris, or PDF files. Paste raw citations. Get instant CrossRef validation with confidence scores. Export results to CSV.</p>
+          <ul>
+            <li>Upload .bib / .ris files</li>
+            <li>PDF reference extraction</li>
+            <li>Paste BibTeX or RIS text</li>
+            <li>CSV export with scores</li>
+            <li>100% free, no account needed</li>
+          </ul>
+          <br>
+          <span class="plugin-tag">Free Preview</span>
+          <a href="index.html" style="margin-left:8px; font-size:0.72rem; color:#000; text-decoration:underline;">Open App →</a>
+        </div>
+
+      </div>
+
+      <div class="sep"></div>
+
+      <!-- VSCode Demo Preview -->
+      <div class="panel-label">// VSCode Extension Preview (Simulated):</div>
+      <div style="background:#1e1e1e; padding:14px; border:1px solid #555; font-family:'Courier New',monospace; font-size:0.78rem; color:#d4d4d4; line-height:1.8; margin-top:6px;">
+        <div style="color:#888;">// example.bib — CiteCheck active</div>
+        <div><span style="color:#569cd6;">@article</span><span style="color:#9cdcfe;">{lecun2015deep,</span> <span style="color:#4ec9b0; font-size:0.7rem;">✓ 97%</span></div>
+        <div style="padding-left:16px;"><span style="color:#ce9178;">title</span> = {Deep learning},</div>
+        <div style="padding-left:16px;"><span style="color:#ce9178;">author</span> = {LeCun, Yann and Bengio, Yoshua and Hinton, Geoffrey},</div>
+        <div style="padding-left:16px;"><span style="color:#ce9178;">journal</span> = {Nature},</div>
+        <div style="padding-left:16px;"><span style="color:#ce9178;">year</span> = {2015}</div>
+        <div>}</div>
+        <div style="height:6px;"></div>
+        <div><span style="color:#569cd6;">@article</span><span style="color:#9cdcfe;">{fake2024hallucinated,</span> <span style="color:#f44747; font-size:0.7rem;">✗ 0%</span></div>
+        <div style="padding-left:16px;"><span style="color:#ce9178;">title</span> = <span style="background:#5a1d1d;">{AI-Generated Fake Paper on Quantum Transformers},</span></div>
+        <div style="padding-left:16px;"><span style="color:#ce9178;">author</span> = {Smith, J.},</div>
+        <div style="padding-left:16px;"><span style="color:#ce9178;">year</span> = {2024}</div>
+        <div>}</div>
+        <div style="height:4px;"></div>
+        <div style="color:#f44747; font-size:0.7rem;">● CiteCheck: 1 citation not found in CrossRef [fake2024hallucinated]</div>
+        <div style="color:#4ec9b0; font-size:0.7rem; margin-top:4px;">$(check-all) CiteCheck: 1 OK | 1 fake | 0 partial</div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p>© 2026 Kavih AI Technologies Pvt. Ltd. &nbsp;|&nbsp; <a href="index.html">App</a> · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="mailto:contact@kavihai.com">Contact</a></p>
+</footer>
+
+<script>
+'use strict';
+
+// ── Sample BibTeX datasets ──
+const SAMPLES = {
+  mixed: `@article{lecun2015deep,
+  title = {Deep learning},
+  author = {LeCun, Yann and Bengio, Yoshua and Hinton, Geoffrey},
+  journal = {Nature},
+  volume = {521},
+  year = {2015},
+  doi = {10.1038/nature14539}
+}
+
+@article{fake2024quantum,
+  title = {Quantum Transformer Networks for Multi-Agent Reinforcement Learning},
+  author = {Zhang, Wei and Liu, Fang},
+  journal = {Journal of AI Research},
+  year = {2024}
+}
+
+@article{vaswani2017attention,
+  title = {Attention is All You Need},
+  author = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki},
+  year = {2017}
+}`,
+
+  real: `@article{lecun2015deep,
+  title = {Deep learning},
+  author = {LeCun, Yann and Bengio, Yoshua and Hinton, Geoffrey},
+  journal = {Nature},
+  volume = {521},
+  year = {2015},
+  doi = {10.1038/nature14539}
+}
+
+@article{goodfellow2014generative,
+  title = {Generative Adversarial Networks},
+  author = {Goodfellow, Ian and Pouget-Abadie, Jean and Mirza, Mehdi},
+  year = {2014}
+}`,
+
+  fake: `@article{smith2024llm,
+  title = {Large Language Models Achieve Human-Level Consciousness via Emergent Quantum Binding},
+  author = {Smith, James and Brown, Alice},
+  journal = {Nature AI Quarterly},
+  year = {2024}
+}
+
+@article{johnson2023robot,
+  title = {Autonomous Robots Solve NP-Hard Problems in Polynomial Time Using DNA Computing},
+  author = {Johnson, Mike and Park, Sarah},
+  journal = {IEEE Transactions on Impossible Problems},
+  year = {2023}
+}`,
+
+  hci: `@inproceedings{amershi2019software,
+  title = {Software Engineering for Machine Learning: A Case Study},
+  author = {Amershi, Saleema and Begel, Andrew and Bird, Christian},
+  booktitle = {ICSE},
+  year = {2019},
+  doi = {10.1109/ICSE-SEIP.2019.00042}
+}
+
+@article{fake2024hri,
+  title = {Robots Develop Theory of Mind Through Embodied Social Learning with Children},
+  author = {Kumar, Priya and Sato, Hiroshi},
+  journal = {ACM Transactions on Human-Robot Interaction Non-Existent},
+  year = {2024}
+}`
+};
+
+function loadSample(name) {
+  document.getElementById('bibInput').value = SAMPLES[name] || '';
+  document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-' + name)?.classList.add('active');
+  resetResults();
+}
+
+function clearEditor() {
+  document.getElementById('bibInput').value = '';
+  document.querySelectorAll('.sample-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn-custom').classList.add('active');
+  resetResults();
+}
+
+function resetResults() {
+  document.getElementById('resultsPanel').innerHTML = '<div style="color:#888; font-size:0.75rem; padding:4px;">[ Click "Run Validation" to start... ]</div>';
+  document.getElementById('progressWrap').style.display = 'none';
+  updateSummary(0, 0, 0, 0);
+}
+
+// Load default sample
+loadSample('mixed');
+
+// ── Parsers ──
+function parseBib(text) {
+  const entries = [];
+  const entryRegex = /@(\w+)\s*\{\s*([^,\s]+)\s*,([^@]*?)(?=\n\s*@|\s*$)/gs;
+  let m;
+  while ((m = entryRegex.exec(text)) !== null) {
+    const type = m[1].toLowerCase();
+    if (['string','preamble','comment'].includes(type)) continue;
+    const key = m[2].trim();
+    const body = m[3];
+    const fields = {};
+    const fReg = /(\w+)\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|"([^"]*)"|(\d+))/g;
+    let f;
+    while ((f = fReg.exec(body)) !== null) {
+      const fname = f[1].toLowerCase();
+      const fval = (f[2] ?? f[3] ?? f[4] ?? '').trim();
+      fields[fname] = fval;
+    }
+    if (Object.keys(fields).length > 0) entries.push({ key, ...fields });
+  }
+  return entries;
+}
+
+// ── CrossRef ──
+async function validateOne(citation) {
+  if (citation.doi) {
+    const doi = citation.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//, '');
+    try {
+      const res = await fetch(`https://api.crossref.org/works/${encodeURIComponent(doi)}`, { headers: { 'Accept': 'application/json' } });
+      if (res.ok) { const d = await res.json(); return scoreMatch(citation, d.message, 'doi'); }
+      if (res.status === 404) return { status: 'not_found', confidence: 0, note: 'DOI not found in CrossRef.' };
+    } catch(_) {}
+  }
+  if (citation.title && citation.title.length > 10) {
+    const q = encodeURIComponent((citation.title + ' ' + (citation.author||'')).substring(0,200));
+    try {
+      const res = await fetch(`https://api.crossref.org/works?query.bibliographic=${q}&rows=1&select=title,author,published,DOI`, { headers: { 'Accept': 'application/json' } });
+      if (res.ok) {
+        const d = await res.json();
+        const items = d.message?.items || [];
+        if (items.length > 0) return scoreMatch(citation, items[0], 'search');
+        return { status: 'not_found', confidence: 0, note: 'No match in CrossRef. Possible AI-hallucination.' };
+      }
+    } catch(_) {}
+  }
+  return { status: 'unknown', confidence: -1, note: 'Insufficient data.' };
+}
+
+function scoreMatch(c, work, method) {
+  const crTitle = (work.title?.[0] || '').toLowerCase();
+  const localTitle = (c.title || '').toLowerCase();
+  const sim = stringSimilarity(crTitle, localTitle);
+  const crYear = work.published?.['date-parts']?.[0]?.[0];
+  const localYear = parseInt(c.year, 10);
+  const yearOk = !localYear || !crYear || Math.abs(crYear - localYear) <= 1;
+  const foundDoi = work.DOI || null;
+  let conf = Math.round(sim * 100);
+  if (method === 'doi') conf = Math.max(conf, 95);
+  if (!yearOk) conf = Math.max(0, conf - 15);
+  let status, note;
+  if (conf >= 80) { status = 'verified'; note = '[OK] Matched' + (foundDoi ? ' — DOI: ' + foundDoi : ''); }
+  else if (conf >= 40) { status = 'partial'; note = '[!!] Partial match (' + conf + '%)' + (!yearOk ? ' Year mismatch: ' + crYear : ''); }
+  else { status = 'not_found'; note = '[XX] Not found (' + conf + '%). Likely AI-generated or misquoted.'; }
+  return { status, confidence: conf, note, foundDoi };
+}
+
+function stringSimilarity(a, b) {
+  if (!a || !b) return 0;
+  const n = s => s.toLowerCase().replace(/[^a-z0-9\s]/g,'').trim();
+  const wA = new Set(n(a).split(/\s+/).filter(w=>w.length>3));
+  const wB = new Set(n(b).split(/\s+/).filter(w=>w.length>3));
+  if (wA.size===0&&wB.size===0) return 1;
+  if (wA.size===0||wB.size===0) return 0;
+  return [...wA].filter(w=>wB.has(w)).length / Math.max(wA.size, wB.size);
+}
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// ── Run Demo ──
+async function runDemo() {
+  const text = document.getElementById('bibInput').value.trim();
+  if (!text) { alert('Please enter or load some BibTeX citations first.'); return; }
+
+  const citations = parseBib(text);
+  if (citations.length === 0) { alert('No valid BibTeX entries found. Check your input format.'); return; }
+
+  const panel = document.getElementById('resultsPanel');
+  panel.innerHTML = '';
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('runBtn').textContent = '⏳ Validating…';
+
+  updateSummary(0, 0, 0, citations.length);
+
+  const results = [];
+
+  for (let i = 0; i < citations.length; i++) {
+    const c = citations[i];
+
+    // Add checking card
+    const card = document.createElement('div');
+    card.className = 'result-line checking';
+    card.id = 'demo-cite-' + i;
+    card.innerHTML = `<div class="result-title"><span class="spinner"></span> ${esc(c.title?.substring(0,60) || c.key || 'Entry ' + (i+1))}</div><div class="result-status" style="color:#888;">Checking CrossRef…</div>`;
+    panel.appendChild(card);
+    panel.scrollTop = panel.scrollHeight;
+
+    // Progress
+    document.getElementById('progressFill').style.width = ((i / citations.length) * 100) + '%';
+    document.getElementById('progressLabel').textContent = `Checking ${i+1} of ${citations.length}: ${c.title?.substring(0,30)||c.key||''}…`;
+
+    const result = await validateOne(c);
+    results.push(result);
+
+    // Update card
+    card.className = 'result-line ' + result.status;
+    const icons = { verified: '[OK]', not_found: '[XX]', partial: '[!!]', unknown: '[?]' };
+    card.innerHTML = `
+      <div class="result-title">${esc(c.title?.substring(0,60) || c.key || 'Entry ' + (i+1))} <small style="font-weight:400; color:#555;">(${c.year||''})</small></div>
+      <div class="result-status">${icons[result.status]||'[?]'} ${esc(result.note)} ${result.confidence>=0?'— '+result.confidence+'%':''}</div>
+      ${result.foundDoi ? `<div style="font-size:0.68rem; margin-top:2px;"><a href="https://doi.org/${result.foundDoi}" target="_blank" style="color:#000;">doi.org/${result.foundDoi}</a></div>` : ''}
+    `;
+
+    const v = results.filter(r=>r.status==='verified').length;
+    const nf = results.filter(r=>r.status==='not_found').length;
+    const p = results.filter(r=>r.status==='partial').length;
+    updateSummary(v, p, nf, citations.length);
+
+    if (i < citations.length - 1) await sleep(130);
+  }
+
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressLabel').textContent = `Done — ${citations.length} citations checked`;
+  document.getElementById('runBtn').disabled = false;
+  document.getElementById('runBtn').textContent = '▶ Run Again';
+  setTimeout(() => { document.getElementById('progressWrap').style.display = 'none'; }, 1500);
+}
+
+function updateSummary(v, p, nf, total) {
+  document.getElementById('sTotal').textContent = total;
+  document.getElementById('sVerified').textContent = v;
+  document.getElementById('sPartial').textContent = p;
+  document.getElementById('sNotFound').textContent = nf;
+}
+
+function esc(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+
+</body>
+</html>
