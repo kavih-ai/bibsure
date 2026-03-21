@@ -5,1389 +5,778 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CiteCheck — AI Citation Validator</title>
   <meta name="description" content="Validate research paper citations instantly. Detect fake AI-generated references in .bib, .ris, and PDF files." />
-
-  <!-- PDF.js CDN -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <!-- Vercel Analytics -->
   <script defer src="/_vercel/insights/script.js"></script>
-
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
-    /* ════════════════════════════════════════
-       WINDOWS 98 — BLACK & WHITE THEME
-       ════════════════════════════════════════ */
-
-    @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
-
     :root {
-      --win-bg:        #ffffff;
-      --win-desktop:   #d4d0c8; /* classic win98 gray - kept for borders */
-      --win-black:     #000000;
-      --win-white:     #ffffff;
-      --win-light:     #f0f0f0;
-      --win-mid:       #808080;
-      --win-dark:      #404040;
-      --win-title-bg:  #000080; /* classic navy — rendered in B&W as black */
-      --win-title-txt: #ffffff;
-
-      /* B&W overrides */
-      --bg:         #ffffff;
-      --card:       #f8f8f8;
-      --border:     #000000;
-      --accent:     #000000;
-      --accent-hover: #333333;
-      --text:       #000000;
-      --muted:      #555555;
-      --verified:   #000000;
-      --verified-bg: #e8e8e8;
-      --notfound:   #000000;
-      --notfound-bg: #d0d0d0;
-      --partial:    #000000;
-      --partial-bg: #c0c0c0;
-      --unknown:    #666666;
-      --unknown-bg: #eeeeee;
+      --cream:      #F4EFE6;
+      --cream-dark: #EDE5D8;
+      --ink:        #2C2318;
+      --ink-mid:    #5C4F40;
+      --ink-light:  #8A7D6E;
+      --gold:       #9B8B5E;
+      --gold-light: #C4AA76;
+      --vermilion:  #C03020;
+      --purple:     #7B6BA8;
+      --white:      #FFFFFF;
+      --card:       #FDFAF5;
+      --serif: 'Playfair Display', Georgia, serif;
+      --serif-body: 'Cormorant Garamond', Georgia, serif;
+      --sans: 'Lato', 'Helvetica Neue', sans-serif;
     }
-
-    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'MS Sans Serif', 'Segoe UI', Tahoma, Arial, sans-serif;
-      font-size: 13px;
-      background: #ffffff;
-      color: #000000;
+      font-family: var(--serif-body);
+      background: var(--cream);
+      color: var(--ink);
       min-height: 100vh;
-      line-height: 1.4;
+      border-left: 3px solid var(--purple);
+      border-right: 3px solid var(--purple);
+      overflow-x: hidden;
     }
 
-    /* ── Win98 Raised border ── */
-    .raised {
-      border-top:    2px solid #ffffff;
-      border-left:   2px solid #ffffff;
-      border-bottom: 2px solid #808080;
-      border-right:  2px solid #808080;
-    }
-    .sunken {
-      border-top:    2px solid #808080;
-      border-left:   2px solid #808080;
-      border-bottom: 2px solid #ffffff;
-      border-right:  2px solid #ffffff;
-    }
-    .inset {
-      border: 2px solid;
-      border-color: #808080 #ffffff #ffffff #808080;
-    }
-
-    /* ── Taskbar-style Header ── */
+    /* HEADER */
     header {
-      background: #000000;
-      padding: 4px 8px;
+      background: var(--cream);
+      border-bottom: 1px solid rgba(155,139,94,0.25);
+      padding: 0 48px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 48px;
+      height: 64px;
       position: sticky;
       top: 0;
       z-index: 100;
     }
     .logo {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #ffffff;
-      text-decoration: none;
-      letter-spacing: 1px;
-      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
-    }
-    .logo-icon {
-      width: 28px; height: 28px;
-      border: 2px solid #ffffff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px;
-      background: #333333;
-      font-weight: bold;
-      color: #ffffff;
-      flex-shrink: 0;
-    }
-    .header-links { display: flex; align-items: center; gap: 8px; }
-    .header-links a {
-      font-size: 0.8rem;
-      color: #cccccc;
-      text-decoration: none;
-      padding: 2px 6px;
-      border: 1px solid transparent;
-    }
-    .header-links a:hover {
-      color: #ffffff;
-      border: 1px solid #888888;
-    }
-
-    /* Free Preview button — Win98 raised button style */
-    .preview-btn {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      background: #d4d0c8;
-      color: #000000;
-      font-weight: 700;
-      font-size: 0.78rem;
-      padding: 4px 10px;
-      text-decoration: none;
-      white-space: nowrap;
-      cursor: pointer;
-      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
-      border-top:    2px solid #ffffff;
-      border-left:   2px solid #ffffff;
-      border-bottom: 2px solid #808080;
-      border-right:  2px solid #808080;
-    }
-    .preview-btn:hover {
-      background: #c8c4bc;
-    }
-    .preview-btn:active {
-      border-top:    2px solid #808080;
-      border-left:   2px solid #808080;
-      border-bottom: 2px solid #ffffff;
-      border-right:  2px solid #ffffff;
-    }
-
-    /* ── Window Container ── */
-    main {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 0 12px 60px;
-    }
-
-    /* Win98 Window chrome */
-    .win-window {
-      background: #d4d0c8;
-      border-top:    2px solid #ffffff;
-      border-left:   2px solid #ffffff;
-      border-bottom: 2px solid #808080;
-      border-right:  2px solid #808080;
-      margin-bottom: 16px;
-    }
-    .win-titlebar {
-      background: #000080;
-      padding: 3px 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      user-select: none;
-    }
-    .win-titlebar.bw {
-      background: #000000;
-    }
-    .win-title {
-      color: #ffffff;
-      font-weight: 700;
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      letter-spacing: 0.5px;
-    }
-    .win-controls {
-      display: flex;
-      gap: 2px;
-    }
-    .win-ctrl {
-      width: 16px; height: 14px;
-      background: #d4d0c8;
-      border-top:    1px solid #ffffff;
-      border-left:   1px solid #ffffff;
-      border-bottom: 1px solid #808080;
-      border-right:  1px solid #808080;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      color: #000000;
-      line-height: 1;
-    }
-    .win-body {
-      padding: 12px;
-      background: #d4d0c8;
-    }
-
-    /* ── Hero / About Window ── */
-    .hero {
-      margin-bottom: 16px;
-    }
-    .hero-inner {
-      background: #ffffff;
-      border: 2px inset #808080;
-      padding: 16px 20px;
-      text-align: center;
-    }
-    .hero h1 {
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: #000000;
-      margin-bottom: 8px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-family: 'VT323', 'Courier New', monospace;
-    }
-    .hero h1 span {
-      text-decoration: underline;
-      text-underline-offset: 4px;
-    }
-    .hero p {
-      font-size: 0.85rem;
-      color: #333333;
-      max-width: 540px;
-      margin: 0 auto;
-    }
-    .badge-row {
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 12px;
-    }
-    .badge {
+      font-family: var(--sans);
       font-size: 0.72rem;
-      padding: 2px 8px;
-      border: 1px solid #000000;
-      background: #e8e8e8;
-      color: #000000;
       font-weight: 700;
-      font-family: 'Courier New', monospace;
-    }
-
-    /* ── Tabs (Win98 style) ── */
-    .tab-bar {
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
       display: flex;
-      gap: 0;
-      margin-bottom: 0;
-      border-bottom: 2px solid #808080;
+      align-items: center;
+      gap: 10px;
     }
-    .tab-btn {
-      padding: 6px 16px;
-      border: 2px solid transparent;
-      border-bottom: none;
-      background: #b0aca4;
-      cursor: pointer;
-      font-size: 0.82rem;
-      font-weight: 600;
-      color: #333333;
-      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
-      margin-bottom: -2px;
-      position: relative;
-      z-index: 1;
+    .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--vermilion); flex-shrink: 0; }
+    .header-links { display: flex; align-items: center; gap: 28px; }
+    .header-links a {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: color 0.2s;
     }
-    .tab-btn.active {
-      background: #d4d0c8;
-      color: #000000;
-      border-top:   2px solid #ffffff;
-      border-left:  2px solid #ffffff;
-      border-right: 2px solid #808080;
-      border-bottom: 2px solid #d4d0c8;
-      z-index: 2;
+    .header-links a:hover { color: var(--ink); }
+    .preview-btn {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      padding: 8px 20px;
+      text-decoration: none;
+      border-radius: 100px;
+      transition: all 0.25s;
     }
-    .tab-btn:hover:not(.active) {
-      background: #c4c0b8;
-      color: #000000;
-    }
+    .preview-btn:hover { background: var(--ink); color: var(--cream); }
 
+    /* HERO */
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: calc(90vh - 64px);
+    }
+    .hero-left {
+      padding: 80px 48px 80px 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .fig-label {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .fig-label::before { content: ''; display: inline-block; width: 32px; height: 1px; background: var(--gold); }
+    .hero-headline {
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 5vw, 4.2rem);
+      font-weight: 400;
+      line-height: 1.08;
+      color: var(--ink);
+      margin-bottom: 32px;
+    }
+    .hero-headline em { font-style: italic; color: var(--gold); }
+    .hero-body {
+      font-family: var(--serif-body);
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--ink-mid);
+      max-width: 400px;
+      margin-bottom: 40px;
+    }
+    .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+    .hero-badge {
+      font-family: var(--sans);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border: 1px solid rgba(44,35,24,0.3);
+      color: var(--ink-mid);
+    }
+    .hero-right {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background: var(--cream-dark);
+    }
+    .ink-illustration { width: 100%; height: 100%; position: absolute; inset: 0; }
+
+    /* MAIN */
+    main { max-width: 1100px; margin: 0 auto; padding: 0 48px 100px; }
+    .section-divider {
+      display: flex; align-items: center; gap: 20px;
+      margin: 64px 0 48px;
+    }
+    .section-divider::before, .section-divider::after { content: ''; flex: 1; height: 1px; background: rgba(155,139,94,0.35); }
+    .section-num { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
+
+    /* TABS */
+    .tab-wrap { border-bottom: 1px solid rgba(44,35,24,0.15); display: flex; gap: 0; margin-bottom: 32px; }
+    .tab-btn {
+      font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase;
+      padding: 14px 28px; border: none; background: transparent; cursor: pointer;
+      color: var(--ink-light); position: relative; transition: color 0.2s;
+    }
+    .tab-btn.active { color: var(--ink); }
+    .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 2px; background: var(--ink); }
+    .tab-btn:hover:not(.active) { color: var(--ink-mid); }
     .tab-panel { display: none; }
     .tab-panel.active { display: block; }
 
-    /* ── Upload Zone ── */
+    /* UPLOAD */
     .upload-zone {
-      border: 2px dashed #555555;
-      background: #ffffff;
-      padding: 36px 20px;
-      text-align: center;
-      cursor: pointer;
-      position: relative;
-      transition: background 0.1s;
+      border: 1px solid rgba(44,35,24,0.2); background: var(--card);
+      padding: 56px 32px; text-align: center; cursor: pointer; transition: all 0.2s; position: relative;
     }
-    .upload-zone:hover, .upload-zone.drag-over {
-      background: #eeeeee;
-      border-style: solid;
-      border-color: #000000;
-    }
-    .upload-zone input[type="file"] {
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      cursor: pointer;
-      width: 100%;
-      height: 100%;
-    }
-    .upload-icon {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      display: block;
-      font-family: monospace;
-    }
-    .upload-zone h3 {
-      font-size: 0.95rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-      color: #000000;
-    }
-    .upload-zone p { font-size: 0.78rem; color: #555555; }
-    .file-types {
-      margin-top: 10px;
-      display: flex;
-      gap: 6px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
-    .file-type-badge {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      background: #e0e0e0;
-      color: #000000;
-      border: 1px solid #000000;
-      font-family: 'Courier New', monospace;
-    }
+    .upload-zone:hover, .upload-zone.drag-over { border-color: var(--gold); background: var(--cream); }
+    .upload-zone input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-icon { font-size: 2rem; margin-bottom: 16px; display: block; opacity: 0.4; }
+    .upload-zone h3 { font-family: var(--serif); font-size: 1.2rem; font-weight: 400; color: var(--ink); margin-bottom: 8px; }
+    .upload-zone p { font-family: var(--sans); font-size: 0.75rem; letter-spacing: 0.05em; color: var(--ink-light); }
+    .file-types { margin-top: 16px; display: flex; gap: 6px; justify-content: center; }
+    .file-type-badge { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.1em; font-weight: 700; text-transform: uppercase; padding: 3px 10px; border: 1px solid rgba(44,35,24,0.25); color: var(--ink-mid); }
 
-    /* ── Paste Area ── */
-    .paste-area {
-      background: #d4d0c8;
-      padding: 10px;
-    }
-    .paste-area label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 6px;
-      font-size: 0.85rem;
-      color: #000000;
-    }
-    .paste-area textarea {
-      width: 100%;
-      height: 180px;
-      border-top:    2px solid #808080;
-      border-left:   2px solid #808080;
-      border-bottom: 2px solid #ffffff;
-      border-right:  2px solid #ffffff;
-      padding: 8px;
-      font-family: 'Courier New', monospace;
-      font-size: 0.78rem;
-      resize: vertical;
-      color: #000000;
-      background: #ffffff;
-      outline: none;
-    }
-    .format-hint {
-      font-size: 0.72rem;
-      color: #555555;
-      margin-top: 4px;
-      font-family: 'Courier New', monospace;
-    }
+    /* PASTE */
+    .paste-area label { display: block; font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-mid); margin-bottom: 10px; }
+    .paste-area textarea { width: 100%; height: 200px; border: 1px solid rgba(44,35,24,0.2); padding: 16px; font-family: 'Courier New', monospace; font-size: 0.8rem; resize: vertical; color: var(--ink); background: var(--card); outline: none; transition: border-color 0.2s; line-height: 1.6; }
+    .paste-area textarea:focus { border-color: var(--gold); }
+    .format-hint { font-family: var(--sans); font-size: 0.65rem; color: var(--ink-light); margin-top: 8px; }
 
-    /* ── Win98 Button ── */
+    /* VALIDATE BUTTON */
     .validate-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      width: 100%;
-      margin-top: 10px;
-      padding: 7px 16px;
-      background: #d4d0c8;
-      color: #000000;
-      border-top:    2px solid #ffffff;
-      border-left:   2px solid #ffffff;
-      border-bottom: 2px solid #808080;
-      border-right:  2px solid #808080;
-      font-size: 0.88rem;
-      font-weight: 700;
-      cursor: pointer;
-      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
-      letter-spacing: 0.3px;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      width: 100%; margin-top: 16px; padding: 16px;
+      background: var(--ink); color: var(--cream); border: none;
+      font-family: var(--sans); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase;
+      cursor: pointer; transition: all 0.25s;
     }
-    .validate-btn:hover:not(:disabled) { background: #c8c4bc; }
-    .validate-btn:active:not(:disabled) {
-      border-top:    2px solid #808080;
-      border-left:   2px solid #808080;
-      border-bottom: 2px solid #ffffff;
-      border-right:  2px solid #ffffff;
-    }
-    .validate-btn:disabled { color: #808080; cursor: not-allowed; }
+    .validate-btn:hover:not(:disabled) { background: var(--gold); color: var(--white); }
+    .validate-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    /* ── Progress ── */
-    .progress-bar-wrap {
-      background: #ffffff;
-      border-top:    2px solid #808080;
-      border-left:   2px solid #808080;
-      border-bottom: 2px solid #ffffff;
-      border-right:  2px solid #ffffff;
-      height: 18px;
-      margin: 10px 0 6px;
-      overflow: hidden;
-      position: relative;
-    }
-    .progress-bar {
-      height: 100%;
-      background: #000080;
-      width: 0%;
-      transition: width .3s;
-      /* B&W: use stripes */
-      background: repeating-linear-gradient(
-        90deg,
-        #000000 0px,
-        #000000 8px,
-        #555555 8px,
-        #555555 16px
-      );
-    }
-    .progress-label {
-      font-size: 0.75rem;
-      color: #000000;
-      text-align: center;
-      font-family: 'Courier New', monospace;
-    }
+    /* PROGRESS */
+    .progress-bar-wrap { height: 2px; background: rgba(155,139,94,0.2); margin: 20px 0 8px; overflow: hidden; }
+    .progress-bar { height: 100%; background: var(--gold); width: 0%; transition: width .3s; }
+    .progress-label { font-family: var(--sans); font-size: 0.68rem; letter-spacing: 0.1em; color: var(--ink-light); text-align: center; }
 
-    /* ── Summary Cards ── */
-    .summary {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 16px;
-    }
-    .summary-card {
-      background: #d4d0c8;
-      border-top:    2px solid #ffffff;
-      border-left:   2px solid #ffffff;
-      border-bottom: 2px solid #808080;
-      border-right:  2px solid #808080;
-      padding: 10px 8px;
-      text-align: center;
-    }
-    .summary-card .num {
-      font-size: 1.8rem;
-      font-weight: 900;
-      line-height: 1;
-      font-family: 'VT323', 'Courier New', monospace;
-      color: #000000;
-    }
-    .summary-card .lbl {
-      font-size: 0.7rem;
-      color: #333333;
-      margin-top: 2px;
-      font-weight: 700;
-      font-family: 'Courier New', monospace;
-    }
-    /* Distinct patterns for each status */
-    .summary-card.verified { border-left: 4px solid #000000; }
-    .summary-card.notfound { border-left: 4px solid #555555; background: #c0c0c0; }
-    .summary-card.partial  { border-left: 4px dashed #000000; }
-    .summary-card.total    { border-left: 4px double #000000; }
+    /* SUMMARY */
+    .summary { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: rgba(44,35,24,0.1); margin-bottom: 40px; border: 1px solid rgba(44,35,24,0.1); }
+    .summary-card { background: var(--card); padding: 24px 20px; text-align: center; }
+    .summary-card .num { font-family: var(--serif); font-size: 2.8rem; font-weight: 400; line-height: 1; color: var(--ink); }
+    .summary-card .lbl { font-family: var(--sans); font-size: 0.62rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink-light); margin-top: 6px; }
+    .summary-card.verified .num { color: var(--ink); }
+    .summary-card.notfound .num { color: var(--vermilion); }
+    .summary-card.partial  .num { color: var(--gold); }
+    .summary-card.total    .num { color: var(--purple); }
 
-    /* ── Results ── */
-    .results-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-    .results-header h2 {
-      font-size: 0.9rem;
-      font-weight: 700;
-      color: #000000;
-      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    .export-btn {
-      padding: 4px 10px;
-      background: #d4d0c8;
-      border-top:    2px solid #ffffff;
-      border-left:   2px solid #ffffff;
-      border-bottom: 2px solid #808080;
-      border-right:  2px solid #808080;
-      font-size: 0.78rem;
-      font-weight: 700;
-      cursor: pointer;
-      color: #000000;
-      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
-    }
-    .export-btn:hover { background: #c8c4bc; }
-    .export-btn:active {
-      border-top:    2px solid #808080;
-      border-left:   2px solid #808080;
-      border-bottom: 2px solid #ffffff;
-      border-right:  2px solid #ffffff;
-    }
+    /* RESULTS */
+    .results-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 12px; }
+    .results-header h2 { font-family: var(--serif); font-size: 1.4rem; font-weight: 400; font-style: italic; color: var(--ink); }
+    .export-btn { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; padding: 8px 18px; border: 1px solid rgba(44,35,24,0.3); background: transparent; color: var(--ink-mid); cursor: pointer; transition: all 0.2s; }
+    .export-btn:hover { border-color: var(--ink); color: var(--ink); }
+    .citation-list { display: flex; flex-direction: column; }
+    .citation-card { background: var(--card); padding: 20px 24px; border-bottom: 1px solid rgba(44,35,24,0.08); border-left: 3px solid transparent; transition: all 0.2s; }
+    .citation-card:hover { background: var(--cream); }
+    .citation-card.verified  { border-left-color: var(--ink); }
+    .citation-card.notfound  { border-left-color: var(--vermilion); }
+    .citation-card.partial   { border-left-color: var(--gold); }
+    .citation-card.checking  { border-left-color: rgba(155,139,94,0.3); }
+    .citation-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+    .citation-title { font-family: var(--serif); font-size: 0.95rem; font-weight: 600; flex: 1; color: var(--ink); line-height: 1.4; }
+    .citation-title a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--gold); }
+    .citation-title a:hover { color: var(--gold); }
+    .status-badge { font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 12px; white-space: nowrap; flex-shrink: 0; }
+    .status-badge.verified  { background: var(--ink); color: var(--cream); }
+    .status-badge.notfound  { background: var(--vermilion); color: var(--white); }
+    .status-badge.partial   { background: transparent; color: var(--gold); border: 1px solid var(--gold); }
+    .status-badge.checking  { color: var(--ink-light); border: 1px solid rgba(44,35,24,0.15); }
+    .status-badge.unknown   { color: var(--ink-light); border: 1px solid rgba(44,35,24,0.15); }
+    .citation-meta { margin-top: 8px; font-family: var(--sans); font-size: 0.68rem; color: var(--ink-light); display: flex; flex-wrap: wrap; gap: 3px 16px; }
+    .citation-note { margin-top: 10px; font-family: var(--serif-body); font-size: 0.82rem; font-style: italic; color: var(--ink-mid); padding: 6px 0 0; border-top: 1px solid rgba(44,35,24,0.08); }
+    .citation-note.notfound { color: var(--vermilion); }
+    .citation-note.partial  { color: var(--gold); }
+    .confidence-bar-wrap { height: 2px; background: rgba(44,35,24,0.1); margin-top: 8px; overflow: hidden; }
+    .confidence-bar { height: 100%; }
+    .confidence-bar.verified { background: var(--ink); }
+    .confidence-bar.partial  { background: var(--gold); }
+    .confidence-bar.notfound { background: var(--vermilion); }
 
-    .citation-list { display: flex; flex-direction: column; gap: 8px; }
+    /* EMPTY */
+    .state-msg { text-align: center; padding: 60px 24px; color: var(--ink-light); }
+    .state-msg .icon { font-size: 2rem; margin-bottom: 12px; display: block; opacity: 0.4; }
+    .state-msg p { font-family: var(--serif-body); font-style: italic; font-size: 1rem; }
 
-    .citation-card {
-      background: #ffffff;
-      border-top:    1px solid #ffffff;
-      border-left:   1px solid #ffffff;
-      border-bottom: 1px solid #808080;
-      border-right:  1px solid #808080;
-      padding: 10px 14px;
-      border-left: 4px solid #000000;
-    }
-    .citation-card.verified  { border-left: 4px solid #000000; }
-    .citation-card.notfound  { border-left: 4px solid #808080; background: #f0f0f0; }
-    .citation-card.partial   { border-left: 4px dashed #333333; }
-    .citation-card.checking  { border-left: 4px dotted #aaaaaa; }
+    /* PLUGIN SECTION */
+    .plugin-section { background: var(--cream-dark); padding: 80px 64px; margin: 0 -48px; position: relative; overflow: hidden; }
+    .plugin-section-header { text-align: center; margin-bottom: 48px; }
+    .plugin-section-header h2 { font-family: var(--serif); font-size: 2.4rem; font-weight: 400; color: var(--ink); margin-top: 8px; }
+    .plugin-section-header h2 em { font-style: italic; color: var(--gold); }
+    .plugin-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 2px; background: rgba(44,35,24,0.12); }
+    .plugin-card { background: var(--card); padding: 36px 32px; transition: background 0.2s; }
+    .plugin-card:hover { background: var(--white); }
+    .plugin-card-fig { font-family: var(--sans); font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .plugin-card h3 { font-family: var(--serif); font-size: 1.5rem; font-weight: 400; color: var(--ink); line-height: 1.2; margin-bottom: 16px; }
+    .plugin-card h3 em { font-style: italic; }
+    .plugin-card p { font-family: var(--serif-body); font-size: 0.88rem; font-weight: 300; line-height: 1.7; color: var(--ink-mid); margin-bottom: 20px; }
+    .plugin-divider { height: 1px; background: rgba(44,35,24,0.12); margin-bottom: 16px; }
+    .plugin-list { list-style: none; padding: 0; }
+    .plugin-list li { font-family: var(--sans); font-size: 0.68rem; color: var(--ink-mid); padding: 6px 0; display: flex; align-items: center; gap: 10px; }
+    .plugin-list li::before { content: ''; width: 16px; height: 1px; background: var(--gold); flex-shrink: 0; }
+    .plugin-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 20px; font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--gold); padding-bottom: 2px; transition: color 0.2s; }
+    .plugin-link:hover { color: var(--gold); }
+    .ink-float { position: absolute; pointer-events: none; opacity: 0.12; }
 
-    .citation-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-    }
-    .citation-title {
-      font-weight: 700;
-      font-size: 0.85rem;
-      flex: 1;
-      color: #000000;
-      font-family: 'MS Sans Serif', Tahoma, Arial, sans-serif;
-    }
-    .citation-title a {
-      color: #000000;
-      text-decoration: underline;
-    }
-    .citation-title a:hover { color: #333333; }
+    /* FOOTER */
+    footer { background: var(--ink); color: var(--cream); padding: 40px 64px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+    .footer-logo { font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold-light); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a { font-family: var(--sans); font-size: 0.65rem; letter-spacing: 0.1em; color: rgba(244,239,230,0.5); text-decoration: none; text-transform: uppercase; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--gold-light); }
+    .footer-copy { font-family: var(--serif-body); font-size: 0.78rem; color: rgba(244,239,230,0.4); font-style: italic; width: 100%; text-align: center; margin-top: 8px; }
 
-    .status-badge {
-      font-size: 0.68rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      white-space: nowrap;
-      flex-shrink: 0;
-      border: 1px solid #000000;
-      font-family: 'Courier New', monospace;
-      background: #e0e0e0;
-      color: #000000;
-    }
-    .status-badge.verified  { background: #000000; color: #ffffff; border-color: #000000; }
-    .status-badge.notfound  { background: #808080; color: #ffffff; border-color: #808080; }
-    .status-badge.partial   { background: #d4d0c8; color: #000000; border: 1px dashed #000000; }
-    .status-badge.checking  { background: #eeeeee; color: #555555; border: 1px dotted #aaaaaa; }
-    .status-badge.unknown   { background: #f0f0f0; color: #555555; }
-
-    .citation-meta {
-      margin-top: 5px;
-      font-size: 0.75rem;
-      color: #555555;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 3px 12px;
-      font-family: 'Courier New', monospace;
-    }
-    .citation-note {
-      margin-top: 6px;
-      font-size: 0.73rem;
-      padding: 4px 8px;
-      border-left: 3px solid #000000;
-      background: #f8f8f8;
-      font-family: 'Courier New', monospace;
-      color: #000000;
-    }
-    .citation-note.notfound { border-left-color: #808080; background: #eeeeee; color: #555555; }
-    .citation-note.partial  { border-left-color: #333333; border-left-style: dashed; }
-
-    .confidence-bar-wrap {
-      height: 4px;
-      background: #d0d0d0;
-      border: 1px solid #aaaaaa;
-      margin-top: 6px;
-      overflow: hidden;
-    }
-    .confidence-bar {
-      height: 100%;
-    }
-    .confidence-bar.verified { background: #000000; }
-    .confidence-bar.partial  { background: repeating-linear-gradient(90deg, #555 0,#555 4px,#bbb 4px,#bbb 8px); }
-    .confidence-bar.notfound { background: #808080; }
-
-    /* ── Empty / Error states ── */
-    .state-msg {
-      text-align: center;
-      padding: 36px 20px;
-      color: #555555;
-      background: #f0f0f0;
-      border: 2px inset #808080;
-      font-family: 'Courier New', monospace;
-    }
-    .state-msg .icon { font-size: 2rem; margin-bottom: 8px; display: block; }
-    .state-msg p { font-size: 0.82rem; }
-
-    /* ── Footer ── */
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.75rem;
-      color: #555555;
-      border-top: 2px solid #808080;
-      background: #d4d0c8;
-      font-family: 'Courier New', monospace;
-    }
-    footer a { color: #333333; text-decoration: underline; margin: 0 6px; }
-    footer a:hover { color: #000000; }
-
-    /* ── Spinner (ASCII style) ── */
-    @keyframes spin-ascii {
-      0%   { content: '|'; }
-      25%  { content: '/'; }
-      50%  { content: '—'; }
-      75%  { content: '\\'; }
-    }
-    @keyframes pulse-border {
-      0%, 100% { border-color: #aaaaaa; }
-      50%       { border-color: #000000; }
-    }
-    .spinner {
-      display: inline-block;
-      width: 12px; height: 12px;
-      border: 2px solid #aaaaaa;
-      border-top-color: #000000;
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
-    }
+    /* SPINNER */
     @keyframes spin { to { transform: rotate(360deg); } }
-    .spinner.dark { border-color: #cccccc; border-top-color: #000000; }
+    .spinner { display: inline-block; width: 12px; height: 12px; border: 1.5px solid rgba(44,35,24,0.2); border-top-color: var(--gold); border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
 
-    /* ── Status bar (Win98 bottom) ── */
-    .statusbar {
-      background: #d4d0c8;
-      border-top: 2px solid #808080;
-      padding: 3px 8px;
-      font-size: 0.72rem;
-      color: #333333;
-      display: flex;
-      gap: 16px;
-      font-family: 'Courier New', monospace;
-    }
-    .statusbar span {
-      border-top:    1px solid #808080;
-      border-left:   1px solid #808080;
-      border-bottom: 1px solid #ffffff;
-      border-right:  1px solid #ffffff;
-      padding: 1px 6px;
-    }
-
-    /* ── Section separator ── */
-    .win-separator {
-      height: 0;
-      border-top: 1px solid #808080;
-      border-bottom: 1px solid #ffffff;
-      margin: 10px 4px;
-    }
-
-    /* ── Responsive ── */
-    @media (max-width: 600px) {
-      .tab-bar { flex-wrap: wrap; }
-      .citation-top { flex-direction: column; }
-      .summary { grid-template-columns: repeat(2, 1fr); }
-    }
-
-    /* ── Demo Banner ── */
-    .demo-banner {
-      background: #000000;
-      color: #ffffff;
-      padding: 6px 12px;
-      font-size: 0.78rem;
-      font-family: 'Courier New', monospace;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .demo-banner a {
-      color: #ffffff;
-      text-decoration: underline;
-      font-weight: 700;
-      margin-left: 8px;
-    }
-    .demo-banner a:hover { color: #cccccc; }
-
-    /* Plugin badge row */
-    .plugin-badges {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 8px;
-      justify-content: center;
-    }
-    .plugin-badge {
-      font-size: 0.72rem;
-      padding: 2px 8px;
-      border: 1px solid #000;
-      background: #000000;
-      color: #ffffff;
-      font-family: 'Courier New', monospace;
-      font-weight: 700;
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      body { border-left: none; border-right: none; }
+      header { padding: 0 20px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 48px 24px; }
+      main { padding: 0 20px 60px; }
+      .summary { grid-template-columns: repeat(2,1fr); }
+      .plugin-grid { grid-template-columns: 1fr; }
+      .plugin-section { padding: 48px 24px; margin: 0 -20px; }
+      footer { padding: 32px 24px; flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
 
-<!-- ── Demo Banner ── -->
-<div class="demo-banner">
-  <span>[ CiteCheck v1.0 — Free Research Preview ] &nbsp;|&nbsp; AI Citation Validator &nbsp;|&nbsp; CrossRef · 150M+ publications</span>
-  <span>
-    <a href="demo.html">▶ Live Demo</a>
-    <a href="zotero-plugin.html">⬡ Zotero Plugin</a>
-    <a href="vscode-plugin.html">◈ VSCode Extension</a>
-  </span>
-</div>
-
-<!-- ── Header ── -->
 <header>
   <a class="logo" href="/">
-    <div class="logo-icon">CC</div>
+    <div class="logo-dot"></div>
     CiteCheck
   </a>
   <div class="header-links">
+    <a href="demo.html">Demo</a>
+    <a href="zotero-plugin.html">Zotero</a>
+    <a href="vscode-plugin.html">VSCode</a>
     <a href="privacy.html">Privacy</a>
-    <a href="terms.html">Terms</a>
-    <a class="preview-btn" href="demo.html">
-      ▶ Free Preview
-    </a>
+    <a class="preview-btn" href="demo.html">Free Preview</a>
   </div>
 </header>
 
-<!-- ── Main ── -->
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="fig-label">(fig. 01) — AI Citation Integrity</div>
+    <h1 class="hero-headline">
+      Validate<br>
+      your <em>citations.</em><br>
+      Trust your<br>
+      <em>research.</em>
+    </h1>
+    <p class="hero-body">
+      We're here for you whether you need to verify a single reference or audit an entire bibliography — catching AI-hallucinated citations before they enter the scholarly record.
+    </p>
+    <div class="hero-badges">
+      <span class="hero-badge">.bib files</span>
+      <span class="hero-badge">.ris files</span>
+      <span class="hero-badge">PDF papers</span>
+      <span class="hero-badge">CrossRef · 150M+</span>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <!-- East Asian Ink Art SVG Illustration -->
+    <svg class="ink-illustration" viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <!-- Sky gradient effect -->
+      <rect width="600" height="700" fill="#EDE5D8"/>
+      <!-- Far mountains -->
+      <path d="M0 500 Q100 350 180 420 Q220 380 280 300 Q340 360 400 290 Q460 340 530 380 Q580 360 600 390 L600 700 L0 700 Z" fill="#D4C9B5" opacity="0.5"/>
+      <path d="M50 580 Q150 460 230 510 Q280 470 340 400 Q390 450 450 430 Q510 460 600 440 L600 700 L0 700 Z" fill="#C8BB9F" opacity="0.55"/>
+      <!-- Ground -->
+      <rect x="0" y="610" width="600" height="90" fill="#BFB090" opacity="0.4"/>
+
+      <!-- Red sun -->
+      <circle cx="480" cy="145" r="30" fill="#C03020" opacity="0.82"/>
+
+      <!-- Flying birds near sun -->
+      <path d="M428 115 Q438 109 448 115" stroke="#2C2318" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M456 103 Q468 96 480 103" stroke="#2C2318" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M498 120 Q508 113 518 120" stroke="#2C2318" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M412 130 Q420 124 428 130" stroke="#2C2318" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+
+      <!-- Pagoda (center-right) -->
+      <g transform="translate(320, 210)">
+        <!-- Tip -->
+        <line x1="0" y1="-55" x2="0" y2="-35" stroke="#2C2318" stroke-width="1.8"/>
+        <circle cx="0" cy="-60" r="5" fill="#C03020" opacity="0.85"/>
+        <!-- Roof tier 1 (top) -->
+        <path d="M-30 -35 Q0 -52 30 -35 L24 -20 L-24 -20 Z" fill="#2C2318" opacity="0.88"/>
+        <!-- Roof tier 2 -->
+        <path d="M-50 -20 Q0 -36 50 -20 L42 -4 L-42 -4 Z" fill="#2C2318" opacity="0.82"/>
+        <!-- Roof tier 3 -->
+        <path d="M-68 -4 Q0 -18 68 -4 L58 14 L-58 14 Z" fill="#2C2318" opacity="0.76"/>
+        <!-- Roof tier 4 (base) -->
+        <path d="M-82 14 Q0 0 82 14 L70 32 L-70 32 Z" fill="#2C2318" opacity="0.7"/>
+        <!-- Pillars -->
+        <rect x="-60" y="32" width="7" height="72" fill="#2C2318" opacity="0.65"/>
+        <rect x="-26" y="32" width="7" height="72" fill="#2C2318" opacity="0.65"/>
+        <rect x="19" y="32" width="7" height="72" fill="#2C2318" opacity="0.65"/>
+        <rect x="53" y="32" width="7" height="72" fill="#2C2318" opacity="0.65"/>
+        <!-- Base platform -->
+        <rect x="-76" y="104" width="152" height="10" rx="1" fill="#2C2318" opacity="0.65"/>
+        <rect x="-86" y="114" width="172" height="6" rx="1" fill="#2C2318" opacity="0.5"/>
+        <!-- Lanterns -->
+        <ellipse cx="-42" cy="70" rx="5" ry="8" fill="#C03020" opacity="0.65"/>
+        <ellipse cx="42"  cy="70" rx="5" ry="8" fill="#C03020" opacity="0.65"/>
+        <!-- Windows -->
+        <rect x="-10" y="44" width="20" height="24" rx="10" fill="#EDE5D8" opacity="0.6"/>
+        <line x1="0" y1="44" x2="0" y2="68" stroke="#2C2318" stroke-width="0.8" opacity="0.4"/>
+        <line x1="-10" y1="56" x2="10" y2="56" stroke="#2C2318" stroke-width="0.8" opacity="0.4"/>
+      </g>
+
+      <!-- Cherry blossom tree (left side) -->
+      <g transform="translate(105, 360)">
+        <!-- Main trunk -->
+        <path d="M0 220 Q-8 180 -4 140 Q-10 90 2 40 Q8 10 4 -20" stroke="#2C2318" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <!-- Main branches -->
+        <path d="M2 60 Q-45 20 -80 -10" stroke="#2C2318" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M3 40 Q30 -5 65 -30" stroke="#2C2318" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+        <path d="M1 100 Q-55 80 -90 55" stroke="#2C2318" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <path d="M2 30 Q15 -10 35 -40" stroke="#2C2318" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+        <!-- Sub-branches -->
+        <path d="M-80 -10 Q-100 -30 -105 -50" stroke="#2C2318" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M65 -30 Q80 -50 85 -70" stroke="#2C2318" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+        <path d="M-90 55 Q-110 38 -115 20" stroke="#2C2318" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+        <!-- Blossom clouds -->
+        <circle cx="-100" cy="-44" r="20" fill="#F0DDD0" opacity="0.65"/>
+        <circle cx="-88"  cy="-58" r="15" fill="#ECD5C5" opacity="0.6"/>
+        <circle cx="-115" cy="-52" r="14" fill="#E8CDBB" opacity="0.55"/>
+        <circle cx="-78"  cy="-68" r="12" fill="#F0DDD0" opacity="0.5"/>
+        <circle cx="82"   cy="-68" r="18" fill="#F0DDD0" opacity="0.65"/>
+        <circle cx="70"   cy="-82" r="14" fill="#ECD5C5" opacity="0.6"/>
+        <circle cx="95"   cy="-56" r="13" fill="#E8CDBB" opacity="0.55"/>
+        <circle cx="-108" cy="18"  r="16" fill="#F0DDD0" opacity="0.55"/>
+        <circle cx="-120" cy="6"   r="12" fill="#ECD5C5" opacity="0.5"/>
+        <!-- Red blossom dots -->
+        <circle cx="-100" cy="-48" r="3.5" fill="#C03020" opacity="0.55"/>
+        <circle cx="-90"  cy="-60" r="2.5" fill="#C03020" opacity="0.5"/>
+        <circle cx="-115" cy="-55" r="2.5" fill="#C03020" opacity="0.45"/>
+        <circle cx="84"   cy="-70" r="3"   fill="#C03020" opacity="0.55"/>
+        <circle cx="72"   cy="-84" r="2"   fill="#C03020" opacity="0.45"/>
+        <circle cx="-110" cy="20"  r="2.5" fill="#C03020" opacity="0.4"/>
+        <!-- Petals falling -->
+        <ellipse cx="-30" cy="20"  rx="3" ry="5" fill="#ECD5C5" opacity="0.5" transform="rotate(-30,-30,20)"/>
+        <ellipse cx="20"  cy="50"  rx="2.5" ry="4" fill="#ECD5C5" opacity="0.4" transform="rotate(20,20,50)"/>
+        <ellipse cx="-50" cy="120" rx="2" ry="3.5" fill="#ECD5C5" opacity="0.35" transform="rotate(-15,-50,120)"/>
+      </g>
+
+      <!-- Willow/vine hanging (right) -->
+      <g transform="translate(530, 100)" opacity="0.6">
+        <path d="M0 0 Q-5 60 10 120" stroke="#2C2318" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <path d="M15 0 Q8 70 20 130" stroke="#2C2318" stroke-width="1" fill="none" stroke-linecap="round"/>
+        <path d="M-10 10 Q-18 80 -5 150" stroke="#2C2318" stroke-width="0.8" fill="none" stroke-linecap="round"/>
+      </g>
+
+      <!-- Ground vegetation -->
+      <path d="M150 615 Q160 595 175 610 Q185 590 200 610" stroke="#2C2318" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.5"/>
+      <path d="M380 618 Q390 600 402 616 Q412 598 425 614" stroke="#2C2318" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.5"/>
+
+      <!-- Water at base -->
+      <path d="M0 638 Q150 622 300 635 Q450 648 600 628 L600 700 L0 700 Z" fill="#BFB090" opacity="0.35"/>
+      <path d="M30 650 Q200 636 370 648 Q490 658 590 642" stroke="#2C2318" stroke-width="0.8" fill="none" opacity="0.25"/>
+      <path d="M10 660 Q180 648 350 656 Q480 664 600 650" stroke="#2C2318" stroke-width="0.6" fill="none" opacity="0.18"/>
+
+      <!-- Boat on water -->
+      <path d="M370 644 Q392 636 414 644" stroke="#2C2318" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <line x1="392" y1="636" x2="392" y2="614" stroke="#2C2318" stroke-width="1.2" opacity="0.7"/>
+      <path d="M386 614 Q392 606 398 614" stroke="#2C2318" stroke-width="1" fill="none" opacity="0.6"/>
+      <!-- Figure on boat -->
+      <circle cx="382" cy="637" r="3" fill="#2C2318" opacity="0.5"/>
+      <path d="M382 640 Q380 648 383 650" stroke="#2C2318" stroke-width="1" fill="none" opacity="0.5"/>
+
+      <!-- Decorative corner frames (like Chinese scroll border) -->
+      <path d="M24 24 L24 70 M24 24 L70 24" stroke="#9B8B5E" stroke-width="1.5" opacity="0.45" stroke-linecap="round"/>
+      <path d="M576 24 L576 70 M576 24 L530 24" stroke="#9B8B5E" stroke-width="1.5" opacity="0.45" stroke-linecap="round"/>
+      <path d="M24 676 L24 630 M24 676 L70 676" stroke="#9B8B5E" stroke-width="1.5" opacity="0.45" stroke-linecap="round"/>
+      <path d="M576 676 L576 630 M576 676 L530 676" stroke="#9B8B5E" stroke-width="1.5" opacity="0.45" stroke-linecap="round"/>
+
+      <!-- Seal stamp (bottom right) -->
+      <g transform="translate(510, 590)" opacity="0.35">
+        <rect x="0" y="0" width="48" height="48" fill="none" stroke="#C03020" stroke-width="1.5"/>
+        <text x="6" y="22" font-size="13" fill="#C03020" font-family="serif">引</text>
+        <text x="6" y="40" font-size="13" fill="#C03020" font-family="serif">用</text>
+      </g>
+    </svg>
+  </div>
+</section>
+
+<!-- MAIN VALIDATOR -->
 <main>
-
-  <!-- Hero Window -->
-  <div class="hero win-window">
-    <div class="win-titlebar bw">
-      <div class="win-title">
-        <span style="font-size:12px;">■</span>
-        CiteCheck — AI Citation Validator
-      </div>
-      <div class="win-controls">
-        <div class="win-ctrl">_</div>
-        <div class="win-ctrl">□</div>
-        <div class="win-ctrl">×</div>
-      </div>
-    </div>
-    <div class="win-body">
-      <div class="hero-inner">
-        <h1>Detect <span>Fake Citations</span> Instantly</h1>
-        <p>Validate research paper references against 150M+ real publications. Catch AI-hallucinated citations before they cause damage.</p>
-        <div class="badge-row">
-          <span class="badge">✓ .bib</span>
-          <span class="badge">✓ .ris</span>
-          <span class="badge">✓ PDF</span>
-          <span class="badge">✓ CrossRef</span>
-          <span class="badge">✓ Free</span>
-        </div>
-        <div class="plugin-badges">
-          <span class="plugin-badge">⬡ Zotero Plugin</span>
-          <span class="plugin-badge">◈ VSCode Extension</span>
-          <span class="plugin-badge">🌐 Web App</span>
-        </div>
-      </div>
-    </div>
+  <div class="section-divider">
+    <span class="section-num">(fig. 02) — Citation Validator</span>
   </div>
 
-  <!-- Main Validator Window -->
-  <div class="win-window">
-    <div class="win-titlebar bw">
-      <div class="win-title">
-        <span style="font-size:12px;">■</span>
-        Citation Validator
-      </div>
-      <div class="win-controls">
-        <div class="win-ctrl">_</div>
-        <div class="win-ctrl">□</div>
-        <div class="win-ctrl">×</div>
-      </div>
-    </div>
-    <div class="win-body">
-
-      <!-- Tabs -->
-      <div class="tab-bar" role="tablist">
-        <button class="tab-btn active" role="tab" data-tab="file">📂 .bib / .ris</button>
-        <button class="tab-btn" role="tab" data-tab="pdf">📄 PDF</button>
-        <button class="tab-btn" role="tab" data-tab="paste">✏ Paste</button>
-      </div>
-
-      <!-- Tab: File -->
-      <div class="tab-panel active" id="tab-file" style="padding-top:8px;">
-        <div class="upload-zone" id="fileZone">
-          <input type="file" id="fileInput" accept=".bib,.ris" />
-          <span class="upload-icon">📑</span>
-          <h3>Drop bibliography file here</h3>
-          <p>or click to browse</p>
-          <div class="file-types">
-            <span class="file-type-badge">.bib</span>
-            <span class="file-type-badge">.ris</span>
-          </div>
-        </div>
-        <button class="validate-btn" id="validateFileBtn" disabled>
-          ▶ Validate Citations
-        </button>
-      </div>
-
-      <!-- Tab: PDF -->
-      <div class="tab-panel" id="tab-pdf" style="padding-top:8px;">
-        <div class="upload-zone" id="pdfZone">
-          <input type="file" id="pdfInput" accept=".pdf" />
-          <span class="upload-icon">📄</span>
-          <h3>Drop PDF paper here</h3>
-          <p>References extracted and validated automatically</p>
-          <div class="file-types">
-            <span class="file-type-badge">.pdf</span>
-          </div>
-        </div>
-        <button class="validate-btn" id="validatePdfBtn" disabled>
-          ▶ Extract &amp; Validate Citations
-        </button>
-      </div>
-
-      <!-- Tab: Paste -->
-      <div class="tab-panel" id="tab-paste" style="padding-top:8px;">
-        <div class="paste-area">
-          <label for="pasteInput">Paste citations below (BibTeX or RIS format):</label>
-          <textarea id="pasteInput" placeholder="@article{smith2024,&#10;  title = {Example Title},&#10;  author = {Smith, J.},&#10;  year = {2024},&#10;  doi = {10.1000/xyz}&#10;}"></textarea>
-          <p class="format-hint">// Supports @article, @book, @inproceedings (BibTeX) and TY-JOUR (RIS)</p>
-        </div>
-        <button class="validate-btn" id="validatePasteBtn">
-          ▶ Validate Citations
-        </button>
-      </div>
-
-      <!-- Progress -->
-      <div id="progressSection" style="display:none; margin-top:12px; padding:4px;">
-        <div class="progress-bar-wrap">
-          <div class="progress-bar" id="progressBar"></div>
-        </div>
-        <p class="progress-label" id="progressLabel">Validating…</p>
-      </div>
-
-    </div>
-    <!-- Status bar -->
-    <div class="statusbar">
-      <span id="statusbarText">Ready</span>
-      <span>CrossRef API</span>
-      <span id="statusbarCount">0 citations</span>
-    </div>
+  <div class="tab-wrap" role="tablist">
+    <button class="tab-btn active" role="tab" data-tab="file">Upload .bib / .ris</button>
+    <button class="tab-btn" role="tab" data-tab="pdf">Upload PDF</button>
+    <button class="tab-btn" role="tab" data-tab="paste">Paste Citations</button>
   </div>
 
-  <!-- Results Window -->
-  <div id="resultsSection" style="display:none;">
-    <div class="win-window">
-      <div class="win-titlebar bw">
-        <div class="win-title">
-          <span style="font-size:12px;">■</span>
-          Results
-        </div>
-        <div class="win-controls">
-          <div class="win-ctrl">_</div>
-          <div class="win-ctrl">□</div>
-          <div class="win-ctrl">×</div>
-        </div>
-      </div>
-      <div class="win-body">
-        <div class="summary" id="summaryCards"></div>
-        <div class="win-separator"></div>
-        <div class="results-header">
-          <h2>▸ Citation Report</h2>
-          <button class="export-btn" id="exportCsvBtn">⬇ Export CSV</button>
-        </div>
-        <div class="citation-list" id="citationList"></div>
+  <div class="tab-panel active" id="tab-file">
+    <div class="upload-zone" id="fileZone">
+      <input type="file" id="fileInput" accept=".bib,.ris" />
+      <span class="upload-icon">↑</span>
+      <h3>Drop your bibliography file here</h3>
+      <p>or click to browse</p>
+      <div class="file-types">
+        <span class="file-type-badge">.bib</span>
+        <span class="file-type-badge">.ris</span>
       </div>
     </div>
+    <button class="validate-btn" id="validateFileBtn" disabled>Validate Citations</button>
   </div>
 
-  <!-- Empty state -->
+  <div class="tab-panel" id="tab-pdf">
+    <div class="upload-zone" id="pdfZone">
+      <input type="file" id="pdfInput" accept=".pdf" />
+      <span class="upload-icon">↑</span>
+      <h3>Drop your research paper PDF here</h3>
+      <p>References will be extracted and validated automatically</p>
+      <div class="file-types"><span class="file-type-badge">.pdf</span></div>
+    </div>
+    <button class="validate-btn" id="validatePdfBtn" disabled>Extract &amp; Validate Citations</button>
+  </div>
+
+  <div class="tab-panel" id="tab-paste">
+    <div class="paste-area">
+      <label for="pasteInput">Paste your citations below</label>
+      <textarea id="pasteInput" placeholder="Paste BibTeX entries (@article{...}) or RIS format (TY - JOUR...) here"></textarea>
+      <p class="format-hint">Supports BibTeX (@article, @book, @inproceedings…) and RIS format (TY - JOUR…)</p>
+    </div>
+    <button class="validate-btn" id="validatePasteBtn">Validate Citations</button>
+  </div>
+
+  <div id="progressSection" style="display:none; margin-top:24px;">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <p class="progress-label" id="progressLabel">Validating…</p>
+  </div>
+
+  <div id="resultsSection" style="display:none; margin-top:48px;">
+    <div class="summary" id="summaryCards"></div>
+    <div class="results-header">
+      <h2 id="resultsTitle">Validation Results</h2>
+      <button class="export-btn" id="exportCsvBtn">Export CSV ↓</button>
+    </div>
+    <div class="citation-list" id="citationList"></div>
+  </div>
+
   <div id="emptyState" style="display:none;">
     <div class="state-msg">
-      <span class="icon">[ ? ]</span>
+      <span class="icon">◎</span>
       <p>No citations found in this file. Check the format and try again.</p>
     </div>
   </div>
-
 </main>
 
-<!-- ── Footer ── -->
+<!-- PLUGIN SECTION -->
+<section class="plugin-section">
+  <svg class="ink-float" style="right:-10px;top:30px;width:180px;height:180px;" viewBox="0 0 200 200" fill="none">
+    <circle cx="155" cy="48" r="22" fill="#C03020"/>
+    <path d="M40 155 Q80 115 105 138 Q135 95 162 128" stroke="#2C2318" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M20 175 Q85 138 148 158" stroke="#2C2318" stroke-width="1" fill="none" stroke-linecap="round"/>
+  </svg>
+
+  <div class="plugin-section-header">
+    <div class="fig-label" style="justify-content:center;">(fig. 03) — Ecosystem</div>
+    <h2>Tools We <em>Build For You</em></h2>
+  </div>
+
+  <div class="plugin-grid">
+    <div class="plugin-card">
+      <div class="plugin-card-fig">(01) Web App</div>
+      <h3>Browser <em>Interface</em></h3>
+      <p>Upload .bib, .ris, or full PDF papers. Get instant CrossRef validation with confidence scores, DOI links, and CSV export.</p>
+      <div class="plugin-divider"></div>
+      <ul class="plugin-list">
+        <li>Upload .bib / .ris files</li>
+        <li>PDF reference extraction</li>
+        <li>Paste BibTeX or RIS text</li>
+        <li>CSV export with confidence scores</li>
+        <li>100% free, no account needed</li>
+      </ul>
+      <a href="demo.html" class="plugin-link">Try Live Demo →</a>
+    </div>
+    <div class="plugin-card">
+      <div class="plugin-card-fig">(02) Zotero Plugin</div>
+      <h3>Library <em>Integration</em></h3>
+      <p>Validate citations directly from your Zotero library. Auto-tags items as Verified, Partial, or Not Found. Works with Zotero 6 &amp; 7.</p>
+      <div class="plugin-divider"></div>
+      <ul class="plugin-list">
+        <li>Right-click validation</li>
+        <li>Automatic library tagging</li>
+        <li>Batch validate collections</li>
+        <li>Progress window with live status</li>
+        <li>Zotero 6 &amp; 7 compatible</li>
+      </ul>
+      <a href="zotero-plugin.html" class="plugin-link">Install Guide →</a>
+    </div>
+    <div class="plugin-card">
+      <div class="plugin-card-fig">(03) VSCode Extension</div>
+      <h3>Editor <em>Diagnostics</em></h3>
+      <p>Real-time BibTeX linting inside VS Code. Inline squiggles, hover tooltips on \cite{} keys, and a full results webview.</p>
+      <div class="plugin-divider"></div>
+      <ul class="plugin-list">
+        <li>Inline error &amp; warning squiggles</li>
+        <li>Hover tooltips with DOI links</li>
+        <li>Validate on save (auto)</li>
+        <li>Status bar citation count</li>
+        <li>Results webview panel</li>
+      </ul>
+      <a href="vscode-plugin.html" class="plugin-link">Install Guide →</a>
+    </div>
+  </div>
+</section>
+
 <footer>
-  <p>© 2026 Kavih AI Technologies Pvt. Ltd. &nbsp;|&nbsp; <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms of Use</a> · <a href="mailto:contact@kavihai.com">Contact</a></p>
-  <p style="margin-top:4px; font-size:0.68rem; color:#777;">CiteCheck is a free research preview. All citation data sourced from CrossRef API.</p>
+  <div class="footer-logo">CiteCheck — Kavih AI Technologies</div>
+  <div class="footer-links">
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="demo.html">Demo</a>
+    <a href="mailto:contact@kavihai.com">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 Kavih AI Technologies Pvt. Ltd. — All citation data sourced from CrossRef API.</div>
 </footer>
 
 <script>
 'use strict';
-
-// ── PDF.js worker ──
 if (typeof pdfjsLib !== 'undefined') {
-  pdfjsLib.GlobalWorkerOptions.workerSrc =
-    'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 }
-
-// ── State ──
-let parsedCitations = [];
-let validationResults = [];
-let activeTab = 'file';
-let fileLoaded = null;
-
-// ── Status bar ──
-function setStatus(text, count) {
-  const s = document.getElementById('statusbarText');
-  const c = document.getElementById('statusbarCount');
-  if (s) s.textContent = text;
-  if (c && count !== undefined) c.textContent = count + ' citations';
-}
-
-// ── Tab switching ──
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    activeTab = btn.dataset.tab;
-    document.getElementById('tab-' + activeTab).classList.add('active');
-    hideResults();
-    setStatus('Ready');
+let parsedCitations=[], validationResults=[], activeTab='file', fileLoaded=null;
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active'); activeTab=btn.dataset.tab;
+    document.getElementById('tab-'+activeTab).classList.add('active'); hideResults();
   });
 });
-
-// ── Drag & drop ──
-function setupDropZone(zone, inputId) {
-  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
-  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
-  zone.addEventListener('drop', e => {
-    e.preventDefault();
-    zone.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file) handleFileSelect(file, inputId === 'fileInput' ? 'bib-ris' : 'pdf');
-  });
+function setupDropZone(zone,type){
+  zone.addEventListener('dragover',e=>{e.preventDefault();zone.classList.add('drag-over');});
+  zone.addEventListener('dragleave',()=>zone.classList.remove('drag-over'));
+  zone.addEventListener('drop',e=>{e.preventDefault();zone.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f)handleFileSelect(f,type);});
 }
-setupDropZone(document.getElementById('fileZone'), 'fileInput');
-setupDropZone(document.getElementById('pdfZone'), 'pdfInput');
-
-document.getElementById('fileInput').addEventListener('change', e => {
-  if (e.target.files[0]) handleFileSelect(e.target.files[0], 'bib-ris');
-});
-document.getElementById('pdfInput').addEventListener('change', e => {
-  if (e.target.files[0]) handleFileSelect(e.target.files[0], 'pdf');
-});
-
-function handleFileSelect(file, type) {
-  fileLoaded = { file, type };
-  const zone = type === 'pdf' ? document.getElementById('pdfZone') : document.getElementById('fileZone');
-  zone.querySelector('h3').textContent = '[OK] ' + file.name;
-  zone.querySelector('p').textContent = (file.size / 1024).toFixed(1) + ' KB — ready to validate';
-  if (type === 'pdf') {
-    document.getElementById('validatePdfBtn').disabled = false;
-  } else {
-    document.getElementById('validateFileBtn').disabled = false;
+setupDropZone(document.getElementById('fileZone'),'bib-ris');
+setupDropZone(document.getElementById('pdfZone'),'pdf');
+document.getElementById('fileInput').addEventListener('change',e=>{if(e.target.files[0])handleFileSelect(e.target.files[0],'bib-ris');});
+document.getElementById('pdfInput').addEventListener('change',e=>{if(e.target.files[0])handleFileSelect(e.target.files[0],'pdf');});
+function handleFileSelect(file,type){
+  fileLoaded={file,type};
+  const zone=type==='pdf'?document.getElementById('pdfZone'):document.getElementById('fileZone');
+  zone.querySelector('h3').textContent=file.name;
+  zone.querySelector('p').textContent=(file.size/1024).toFixed(1)+' KB — ready to validate';
+  document.getElementById(type==='pdf'?'validatePdfBtn':'validateFileBtn').disabled=false;
+}
+document.getElementById('validateFileBtn').addEventListener('click',()=>runValidation('file'));
+document.getElementById('validatePdfBtn').addEventListener('click',()=>runValidation('pdf'));
+document.getElementById('validatePasteBtn').addEventListener('click',()=>runValidation('paste'));
+function parseBib(text){
+  const entries=[],re=/@(\w+)\s*\{\s*([^,\s]+)\s*,([^@]*?)(?=\n\s*@|\s*$)/gs;let m;
+  while((m=re.exec(text))!==null){
+    const type=m[1].toLowerCase();if(['string','preamble','comment'].includes(type))continue;
+    const key=m[2].trim(),body=m[3],fields={},fRe=/(\w+)\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|"([^"]*)"|(\d+))/g;let f;
+    while((f=fRe.exec(body))!==null)fields[f[1].toLowerCase()]=(f[2]??f[3]??f[4]??'').trim();
+    if(Object.keys(fields).length>0)entries.push({type,key,...fields,_format:'bib'});
+  }return entries;
+}
+function parseRis(text){
+  const entries=[],lines=text.split(/\r?\n/);let current=null;
+  const fm={TI:'title',T1:'title',CT:'title',BT:'title',AU:'author',A1:'author',A2:'author',PY:'year',Y1:'year',JO:'journal',JF:'journal',T2:'journal',J2:'journal',DO:'doi',UR:'url',LK:'url',PB:'publisher',VL:'volume',IS:'issue'};
+  for(const line of lines){
+    const m=line.match(/^([A-Z][A-Z0-9])\s{1,2}-\s+(.*)/);if(!m)continue;
+    const[,tag,val]=m;
+    if(tag==='TY'){current={type:val.trim(),_format:'ris'};}
+    else if(tag==='ER'&&current){if(current.title||current.doi)entries.push(current);current=null;}
+    else if(current){if(['AU','A1','A2'].includes(tag)){current.author=current.author?current.author+'; '+val.trim():val.trim();}else if(fm[tag])current[fm[tag]]=val.trim();}
   }
-  setStatus('File loaded: ' + file.name);
+  if(current&&(current.title||current.doi))entries.push(current);return entries;
 }
-
-// ── Validate buttons ──
-document.getElementById('validateFileBtn').addEventListener('click', () => runValidation('file'));
-document.getElementById('validatePdfBtn').addEventListener('click', () => runValidation('pdf'));
-document.getElementById('validatePasteBtn').addEventListener('click', () => runValidation('paste'));
-
-// ── BibTeX Parser ──
-function parseBib(text) {
-  const entries = [];
-  const entryRegex = /@(\w+)\s*\{\s*([^,\s]+)\s*,([^@]*?)(?=\n\s*@|\s*$)/gs;
-  let m;
-  while ((m = entryRegex.exec(text)) !== null) {
-    const type = m[1].toLowerCase();
-    if (type === 'string' || type === 'preamble' || type === 'comment') continue;
-    const key = m[2].trim();
-    const body = m[3];
-    const fields = {};
-    const fReg = /(\w+)\s*=\s*(?:\{((?:[^{}]|\{[^{}]*\})*)\}|"([^"]*)"|(\d+))/g;
-    let f;
-    while ((f = fReg.exec(body)) !== null) {
-      const fname = f[1].toLowerCase();
-      const fval = (f[2] !== undefined ? f[2] : (f[3] !== undefined ? f[3] : f[4])).trim();
-      fields[fname] = fval;
-    }
-    if (Object.keys(fields).length > 0) {
-      entries.push({ type, key, ...fields, _format: 'bib' });
-    }
-  }
-  return entries;
+function detectAndParse(text){const t=text.trim();if(t.startsWith('@')||/@\w+\s*\{/.test(t))return parseBib(t);if(/^TY\s+-\s+/m.test(t))return parseRis(t);return[];}
+async function extractPdfText(file){
+  const buf=await file.arrayBuffer(),pdf=await pdfjsLib.getDocument({data:buf}).promise;let text='';
+  for(let i=1;i<=pdf.numPages;i++){const page=await pdf.getPage(i),content=await page.getTextContent();text+=content.items.map(it=>it.str).join(' ')+'\n';}return text;
 }
-
-// ── RIS Parser ──
-function parseRis(text) {
-  const entries = [];
-  const lines = text.split(/\r?\n/);
-  let current = null;
-  const fieldMap = {
-    TI: 'title', T1: 'title', CT: 'title', BT: 'title',
-    AU: 'author', A1: 'author', A2: 'author',
-    PY: 'year', Y1: 'year',
-    JO: 'journal', JF: 'journal', T2: 'journal', J2: 'journal',
-    DO: 'doi',
-    UR: 'url', LK: 'url',
-    AB: 'abstract', N2: 'abstract',
-    PB: 'publisher',
-    VL: 'volume', IS: 'issue',
-    SP: 'startPage', EP: 'endPage',
-    SN: 'issn',
-  };
-  for (const line of lines) {
-    const m = line.match(/^([A-Z][A-Z0-9])\s{1,2}-\s+(.*)/);
-    if (!m) continue;
-    const [, tag, val] = m;
-    if (tag === 'TY') {
-      current = { type: val.trim(), _format: 'ris' };
-    } else if (tag === 'ER' && current) {
-      if (current.title || current.doi) entries.push(current);
-      current = null;
-    } else if (current) {
-      if (tag === 'AU' || tag === 'A1' || tag === 'A2') {
-        current.author = current.author ? current.author + '; ' + val.trim() : val.trim();
-      } else if (fieldMap[tag]) {
-        current[fieldMap[tag]] = val.trim();
+function extractRefsFromPdfText(text){
+  const rs=text.match(/(?:^|\n)\s*(?:references|bibliography|works cited|literature cited|reference list)\s*\n([\s\S]+?)(?:\n\s*(?:appendix|supplementary|acknowledgements|about the authors)\s*\n|$)/i);
+  const body=rs?rs[1]:text,chunks=body.split(/(?:\n|^)\s*(?:\[\d+\]|\d+\.|[\(\[]\d+[\)\]])\s+/),cites=[];
+  for(const chunk of chunks){if(chunk.trim().length<20)continue;const c=parseInlineRef(chunk.trim());if(c)cites.push({...c,_format:'pdf'});}return cites;
+}
+function parseInlineRef(text){
+  const result={raw:text};
+  const doiM=text.match(/\b(10\.\d{4,}\/\S+)/);if(doiM)result.doi=doiM[1].replace(/[.,;)\]]+$/,'');
+  const yearM=text.match(/\b(19|20)\d{2}\b/);if(yearM)result.year=yearM[0];
+  const qM=text.match(/["""]([^"""]{10,})["""]/);
+  if(qM){result.title=qM[1].trim();}else{const p=text.split(/\.\s+/);if(p.length>=2)result.title=p[1].replace(/["""]/g,'').trim().substring(0,150);}
+  result.author=(yearM?text.substring(0,text.indexOf(yearM[0])):text.substring(0,80)).replace(/["""]/g,'').trim().substring(0,100);
+  return result.title||result.doi?result:null;
+}
+async function validateOne(citation){
+  const CR='https://api.crossref.org';
+  if(citation.doi){const doi=citation.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//,'');
+    try{const r=await fetch(`${CR}/works/${encodeURIComponent(doi)}`,{headers:{'Accept':'application/json'}});
+      if(r.ok){const d=await r.json();return scoreMatch(citation,d.message,'doi');}
+      if(r.status===404)return{status:'not_found',confidence:0,note:'DOI not found in CrossRef — likely fake or incorrect.'};
+    }catch(_){}}
+  if(citation.title&&citation.title.length>10){
+    const q=encodeURIComponent((citation.title+' '+(citation.author||'')).substring(0,200));
+    try{const r=await fetch(`${CR}/works?query.bibliographic=${q}&rows=1&select=title,author,published,DOI,container-title,type`,{headers:{'Accept':'application/json'}});
+      if(r.ok){const d=await r.json(),items=d.message?.items||[];
+        if(items.length>0)return scoreMatch(citation,items[0],'search');
+        return{status:'not_found',confidence:0,note:'No match found in CrossRef. This citation may be AI-generated.'};
       }
-    }
+    }catch(_){}}
+  return{status:'unknown',confidence:-1,note:'Insufficient metadata to validate this entry.'};
+}
+function scoreMatch(citation,work,method){
+  const crTitle=(work.title?.[0]||'').toLowerCase(),localTitle=(citation.title||'').toLowerCase();
+  const sim=stringSimilarity(crTitle,localTitle),crYear=work.published?.['date-parts']?.[0]?.[0];
+  const localYear=parseInt(citation.year,10),yearOk=!localYear||!crYear||Math.abs(crYear-localYear)<=1;
+  const foundDoi=work.DOI||null;let confidence=Math.round(sim*100);
+  if(method==='doi')confidence=Math.max(confidence,95);if(!yearOk)confidence=Math.max(0,confidence-15);
+  let status,note;
+  if(confidence>=80){status='verified';note=`Matched in CrossRef${foundDoi?' — DOI: '+foundDoi:''}`;}
+  else if(confidence>=40){status='partial';note=`Partial match (${confidence}% similar).${!yearOk?' Year mismatch: expected '+crYear+', found '+localYear+'.':''}`;}
+  else{status='not_found';note=`Title too different from CrossRef records (${confidence}% match). Likely AI-generated or misquoted.`;}
+  return{status,confidence,note,foundDoi,crYear};
+}
+function stringSimilarity(a,b){
+  if(!a||!b)return 0;const norm=s=>s.toLowerCase().replace(/[^a-z0-9\s]/g,'').trim();
+  const wA=new Set(norm(a).split(/\s+/).filter(w=>w.length>3)),wB=new Set(norm(b).split(/\s+/).filter(w=>w.length>3));
+  if(wA.size===0&&wB.size===0)return 1;if(wA.size===0||wB.size===0)return 0;
+  return[...wA].filter(w=>wB.has(w)).length/Math.max(wA.size,wB.size);
+}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+async function runValidation(source){
+  hideResults();parsedCitations=[];validationResults=[];
+  try{
+    if(source==='file'){if(!fileLoaded||fileLoaded.type!=='bib-ris')return;const text=await fileLoaded.file.text();const ext=fileLoaded.file.name.split('.').pop().toLowerCase();parsedCitations=ext==='bib'?parseBib(text):(ext==='ris'?parseRis(text):detectAndParse(text));}
+    else if(source==='pdf'){if(!fileLoaded||fileLoaded.type!=='pdf')return;if(typeof pdfjsLib==='undefined'){alert('PDF.js failed to load.');return;}const text=await extractPdfText(fileLoaded.file);parsedCitations=extractRefsFromPdfText(text);}
+    else{const text=document.getElementById('pasteInput').value.trim();if(!text)return;parsedCitations=detectAndParse(text);}
+  }catch(err){alert('Error reading file: '+err.message);return;}
+  if(parsedCitations.length===0){document.getElementById('emptyState').style.display='block';return;}
+  showProgress(0,parsedCitations.length);document.getElementById('resultsSection').style.display='block';
+  renderSummary(0,0,0,parsedCitations.length);renderCitationsShell();
+  for(let i=0;i<parsedCitations.length;i++){
+    updateCitationCard(i,'checking',null);const result=await validateOne(parsedCitations[i]);
+    validationResults[i]=result;updateCitationCard(i,result.status,result);showProgress(i+1,parsedCitations.length);
+    const c=countResults();renderSummary(c.verified,c.notFound,c.partial,parsedCitations.length);
+    if(i<parsedCitations.length-1)await sleep(120);
   }
-  if (current && (current.title || current.doi)) entries.push(current);
-  return entries;
+  showProgress(parsedCitations.length,parsedCitations.length);
+  setTimeout(()=>{document.getElementById('progressSection').style.display='none';},1200);
 }
-
-// ── Auto-detect format ──
-function detectAndParse(text) {
-  const t = text.trim();
-  if (t.startsWith('@') || /@\w+\s*\{/.test(t)) return parseBib(t);
-  if (/^TY\s+-\s+/m.test(t)) return parseRis(t);
-  return [];
+function countResults(){return{verified:validationResults.filter(r=>r?.status==='verified').length,notFound:validationResults.filter(r=>r?.status==='not_found').length,partial:validationResults.filter(r=>r?.status==='partial').length};}
+function hideResults(){['resultsSection','progressSection','emptyState'].forEach(id=>document.getElementById(id).style.display='none');}
+function showProgress(done,total){
+  document.getElementById('progressSection').style.display='block';
+  document.getElementById('progressBar').style.width=(total>0?(done/total)*100:0)+'%';
+  document.getElementById('progressLabel').textContent=done<total?`Checking ${done+1} of ${total}…`:`Complete — ${total} citations validated`;
 }
-
-// ── PDF text extraction ──
-async function extractPdfText(file) {
-  const buf = await file.arrayBuffer();
-  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
-  let text = '';
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    text += content.items.map(it => it.str).join(' ') + '\n';
-  }
-  return text;
+function renderSummary(verified,notFound,partial,total){
+  document.getElementById('summaryCards').innerHTML=`
+    <div class="summary-card total"><div class="num">${total}</div><div class="lbl">Total</div></div>
+    <div class="summary-card verified"><div class="num">${verified}</div><div class="lbl">Verified</div></div>
+    <div class="summary-card partial"><div class="num">${partial}</div><div class="lbl">Partial Match</div></div>
+    <div class="summary-card notfound"><div class="num">${notFound}</div><div class="lbl">Not Found</div></div>`;
 }
-
-// ── Extract references from PDF text ──
-function extractRefsFromPdfText(text) {
-  const refSection = text.match(
-    /(?:^|\n)\s*(?:references|bibliography|works cited|literature cited|reference list)\s*\n([\s\S]+?)(?:\n\s*(?:appendix|supplementary|acknowledgements|about the authors)\s*\n|$)/i
-  );
-  const body = refSection ? refSection[1] : text;
-  const chunks = body.split(/(?:\n|^)\s*(?:\[\d+\]|\d+\.|[\(\[]\d+[\)\]])\s+/);
-  const citations = [];
-  for (const chunk of chunks) {
-    if (chunk.trim().length < 20) continue;
-    const c = parseInlineRef(chunk.trim());
-    if (c) citations.push({ ...c, _format: 'pdf' });
-  }
-  return citations;
-}
-
-// ── Parse a single inline reference string ──
-function parseInlineRef(text) {
-  const result = { raw: text };
-  const doiM = text.match(/\b(10\.\d{4,}\/\S+)/);
-  if (doiM) result.doi = doiM[1].replace(/[.,;)\]]+$/, '');
-  const urlM = text.match(/https?:\/\/[^\s,)]+/);
-  if (urlM) result.url = urlM[0];
-  const yearM = text.match(/\b(19|20)\d{2}\b/);
-  if (yearM) result.year = yearM[0];
-  const quotedM = text.match(/["""]([^"""]{10,})["""]/);
-  if (quotedM) {
-    result.title = quotedM[1].trim();
-  } else {
-    const parts = text.split(/\.\s+/);
-    if (parts.length >= 2) result.title = parts[1].replace(/["""]/g, '').trim().substring(0, 150);
-  }
-  const beforeYear = yearM ? text.substring(0, text.indexOf(yearM[0])) : text.substring(0, 80);
-  result.author = beforeYear.replace(/["""]/g, '').trim().substring(0, 100);
-  return result.title || result.doi ? result : null;
-}
-
-// ── CrossRef API validation ──
-const CROSSREF_BASE = 'https://api.crossref.org';
-
-async function validateOne(citation) {
-  if (citation.doi) {
-    const doi = citation.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//, '');
-    try {
-      const res = await fetch(`${CROSSREF_BASE}/works/${encodeURIComponent(doi)}`, {
-        headers: { 'Accept': 'application/json' }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return scoreMatch(citation, data.message, 'doi');
-      } else if (res.status === 404) {
-        return { status: 'not_found', confidence: 0, note: 'DOI not found in CrossRef — likely fake or incorrect.' };
-      }
-    } catch (_) {}
-  }
-
-  if (citation.title && citation.title.length > 10) {
-    const q = encodeURIComponent((citation.title + ' ' + (citation.author || '')).substring(0, 200));
-    try {
-      const res = await fetch(
-        `${CROSSREF_BASE}/works?query.bibliographic=${q}&rows=1&select=title,author,published,DOI,container-title,type`,
-        { headers: { 'Accept': 'application/json' } }
-      );
-      if (res.ok) {
-        const data = await res.json();
-        const items = data.message?.items || [];
-        if (items.length > 0) return scoreMatch(citation, items[0], 'search');
-        return { status: 'not_found', confidence: 0, note: 'No match found in CrossRef. Possible AI-hallucination.' };
-      }
-    } catch (_) {}
-  }
-
-  return { status: 'unknown', confidence: -1, note: 'Insufficient metadata to validate.' };
-}
-
-// ── Score match ──
-function scoreMatch(citation, work, method) {
-  const crTitle = (work.title?.[0] || '').toLowerCase();
-  const localTitle = (citation.title || '').toLowerCase();
-  const titleSim = stringSimilarity(crTitle, localTitle);
-  const crYear = work.published?.['date-parts']?.[0]?.[0];
-  const localYear = parseInt(citation.year, 10);
-  const yearOk = !localYear || !crYear || Math.abs(crYear - localYear) <= 1;
-  const foundDoi = work.DOI || null;
-
-  let confidence = Math.round(titleSim * 100);
-  if (method === 'doi') confidence = Math.max(confidence, 95);
-  if (!yearOk) confidence = Math.max(0, confidence - 15);
-
-  let status, note;
-  if (confidence >= 80) {
-    status = 'verified';
-    note = '[OK] Matched in CrossRef' + (foundDoi ? ' — DOI: ' + foundDoi : '');
-  } else if (confidence >= 40) {
-    status = 'partial';
-    note = '[!!] Partial match (' + confidence + '% similar). Check title/year carefully.' + (!yearOk ? ' Year mismatch: expected ' + crYear + ', found ' + localYear + '.' : '');
-  } else {
-    status = 'not_found';
-    note = '[XX] Title too different from CrossRef records (' + confidence + '% match). Likely fake or heavily misquoted.';
-  }
-
-  return { status, confidence, note, foundDoi, crYear };
-}
-
-// ── String similarity ──
-function stringSimilarity(a, b) {
-  if (!a || !b) return 0;
-  const norm = s => s.toLowerCase().replace(/[^a-z0-9\s]/g, '').trim();
-  const wordsA = new Set(norm(a).split(/\s+/).filter(w => w.length > 3));
-  const wordsB = new Set(norm(b).split(/\s+/).filter(w => w.length > 3));
-  if (wordsA.size === 0 && wordsB.size === 0) return 1;
-  if (wordsA.size === 0 || wordsB.size === 0) return 0;
-  const inter = [...wordsA].filter(w => wordsB.has(w)).length;
-  return inter / Math.max(wordsA.size, wordsB.size);
-}
-
-const sleep = ms => new Promise(r => setTimeout(r, ms));
-
-// ── Main validation flow ──
-async function runValidation(source) {
-  hideResults();
-  parsedCitations = [];
-  validationResults = [];
-  setStatus('Parsing input...');
-
-  try {
-    if (source === 'file') {
-      if (!fileLoaded || fileLoaded.type !== 'bib-ris') return;
-      const text = await fileLoaded.file.text();
-      const ext = fileLoaded.file.name.split('.').pop().toLowerCase();
-      parsedCitations = ext === 'bib' ? parseBib(text) : (ext === 'ris' ? parseRis(text) : detectAndParse(text));
-    } else if (source === 'pdf') {
-      if (!fileLoaded || fileLoaded.type !== 'pdf') return;
-      if (typeof pdfjsLib === 'undefined') {
-        alert('PDF.js failed to load. Please refresh and try again.');
-        return;
-      }
-      setStatus('Extracting PDF text...');
-      const text = await extractPdfText(fileLoaded.file);
-      parsedCitations = extractRefsFromPdfText(text);
-    } else {
-      const text = document.getElementById('pasteInput').value.trim();
-      if (!text) return;
-      parsedCitations = detectAndParse(text);
-    }
-  } catch (err) {
-    alert('Error reading file: ' + err.message);
-    return;
-  }
-
-  if (parsedCitations.length === 0) {
-    document.getElementById('emptyState').style.display = 'block';
-    setStatus('No citations found');
-    return;
-  }
-
-  setStatus('Validating...', parsedCitations.length);
-  showProgress(0, parsedCitations.length);
-  document.getElementById('resultsSection').style.display = 'block';
-  renderSummary(0, 0, 0, parsedCitations.length);
-  renderCitationsShell();
-
-  for (let i = 0; i < parsedCitations.length; i++) {
-    const c = parsedCitations[i];
-    updateCitationCard(i, 'checking', null);
-    const result = await validateOne(c);
-    validationResults[i] = result;
-    updateCitationCard(i, result.status, result);
-    showProgress(i + 1, parsedCitations.length);
-
-    const counts = countResults();
-    renderSummary(counts.verified, counts.notFound, counts.partial, parsedCitations.length);
-
-    if (i < parsedCitations.length - 1) await sleep(120);
-  }
-
-  showProgress(parsedCitations.length, parsedCitations.length);
-  setStatus('Done — ' + parsedCitations.length + ' citations checked', parsedCitations.length);
-  setTimeout(() => { document.getElementById('progressSection').style.display = 'none'; }, 1500);
-}
-
-function countResults() {
-  const verified = validationResults.filter(r => r?.status === 'verified').length;
-  const notFound = validationResults.filter(r => r?.status === 'not_found').length;
-  const partial = validationResults.filter(r => r?.status === 'partial').length;
-  return { verified, notFound, partial };
-}
-
-function hideResults() {
-  document.getElementById('resultsSection').style.display = 'none';
-  document.getElementById('progressSection').style.display = 'none';
-  document.getElementById('emptyState').style.display = 'none';
-}
-
-function showProgress(done, total) {
-  const section = document.getElementById('progressSection');
-  section.style.display = 'block';
-  const pct = total > 0 ? (done / total) * 100 : 0;
-  document.getElementById('progressBar').style.width = pct + '%';
-  document.getElementById('progressLabel').textContent =
-    done < total ? `Checking ${done + 1} of ${total}…` : `Done — ${total} citations checked`;
-}
-
-function renderSummary(verified, notFound, partial, total) {
-  document.getElementById('summaryCards').innerHTML = `
-    <div class="summary-card total"><div class="num">${total}</div><div class="lbl">TOTAL</div></div>
-    <div class="summary-card verified"><div class="num">${verified}</div><div class="lbl">[OK] VERIFIED</div></div>
-    <div class="summary-card partial"><div class="num">${partial}</div><div class="lbl">[!!] PARTIAL</div></div>
-    <div class="summary-card notfound"><div class="num">${notFound}</div><div class="lbl">[XX] NOT FOUND</div></div>
-  `;
-}
-
-function citationDisplayTitle(c) {
-  return c.title || c.raw?.substring(0, 80) || c.key || 'Untitled entry';
-}
-
-function renderCitationsShell() {
-  const list = document.getElementById('citationList');
-  list.innerHTML = parsedCitations.map((c, i) => `
+function citationDisplayTitle(c){return c.title||c.raw?.substring(0,80)||c.key||'Untitled entry';}
+function renderCitationsShell(){
+  document.getElementById('citationList').innerHTML=parsedCitations.map((c,i)=>`
     <div class="citation-card checking" id="cite-${i}">
-      <div class="citation-top">
-        <div class="citation-title">${escHtml(citationDisplayTitle(c))}</div>
-        <span class="status-badge checking"><span class="spinner dark"></span> Checking…</span>
-      </div>
-      <div class="citation-meta">
-        ${c.author ? `<span>By: ${escHtml(c.author.substring(0, 60))}${c.author.length > 60 ? '…' : ''}</span>` : ''}
-        ${c.year ? `<span>Year: ${escHtml(c.year)}</span>` : ''}
-        ${c.journal ? `<span>Journal: ${escHtml(c.journal.substring(0, 50))}</span>` : ''}
-        ${c.doi ? `<span>DOI: ${escHtml(c.doi)}</span>` : ''}
-      </div>
-    </div>
-  `).join('');
+      <div class="citation-top"><div class="citation-title">${escHtml(citationDisplayTitle(c))}</div><span class="status-badge checking"><span class="spinner"></span></span></div>
+      <div class="citation-meta">${c.author?`<span>${escHtml(c.author.substring(0,60))}${c.author.length>60?'…':''}</span>`:''}${c.year?`<span>${escHtml(c.year)}</span>`:''}${c.journal?`<span>${escHtml(c.journal.substring(0,50))}</span>`:''}</div>
+    </div>`).join('');
 }
-
-function updateCitationCard(i, status, result) {
-  const card = document.getElementById('cite-' + i);
-  if (!card) return;
-  const c = parsedCitations[i];
-  const statusLabel = {
-    verified: '[OK] Verified',
-    not_found: '[XX] Not Found',
-    partial: '[!!] Partial',
-    checking: '[ ] Checking…',
-    unknown: '[?] Unknown'
-  }[status] || status;
-
-  const doiLink = result?.foundDoi
-    ? `<a href="https://doi.org/${result.foundDoi}" target="_blank" rel="noopener">doi.org/${result.foundDoi}</a>`
-    : (c.doi ? `<span>${escHtml(c.doi)}</span>` : '');
-
-  const cssStatus = status.replace('_', '');
-  card.className = 'citation-card ' + cssStatus;
-  card.innerHTML = `
+function updateCitationCard(i,status,result){
+  const card=document.getElementById('cite-'+i);if(!card)return;
+  const c=parsedCitations[i],statusLabel={verified:'Verified',not_found:'Not Found',partial:'Partial Match',checking:'Checking…',unknown:'Unknown'}[status]||status;
+  const doiLink=result?.foundDoi?`<a href="https://doi.org/${result.foundDoi}" target="_blank" rel="noopener">doi.org/${result.foundDoi}</a>`:(c.doi?`<span>${escHtml(c.doi)}</span>`:'');
+  const css=status.replace('_','');
+  card.className='citation-card '+css;
+  card.innerHTML=`
     <div class="citation-top">
-      <div class="citation-title">
-        ${result?.foundDoi
-          ? `<a href="https://doi.org/${result.foundDoi}" target="_blank" rel="noopener">${escHtml(citationDisplayTitle(c))}</a>`
-          : escHtml(citationDisplayTitle(c))
-        }
-      </div>
-      <span class="status-badge ${cssStatus}">${statusLabel}</span>
+      <div class="citation-title">${result?.foundDoi?`<a href="https://doi.org/${result.foundDoi}" target="_blank" rel="noopener">${escHtml(citationDisplayTitle(c))}</a>`:escHtml(citationDisplayTitle(c))}</div>
+      <span class="status-badge ${css}">${statusLabel}</span>
     </div>
-    <div class="citation-meta">
-      ${c.author ? `<span>By: ${escHtml(c.author.substring(0, 60))}${c.author.length > 60 ? '…' : ''}</span>` : ''}
-      ${c.year ? `<span>Year: ${escHtml(c.year)}</span>` : ''}
-      ${c.journal ? `<span>Journal: ${escHtml(c.journal.substring(0, 50))}</span>` : ''}
-      ${doiLink ? `<span>DOI: ${doiLink}</span>` : ''}
-    </div>
-    ${result?.note ? `<div class="citation-note ${cssStatus}">${escHtml(result.note)}</div>` : ''}
-    ${result && result.confidence >= 0 ? `
-      <div class="confidence-bar-wrap">
-        <div class="confidence-bar ${cssStatus}" style="width:${result.confidence}%"></div>
-      </div>
-    ` : ''}
-  `;
+    <div class="citation-meta">${c.author?`<span>${escHtml(c.author.substring(0,60))}${c.author.length>60?'…':''}</span>`:''}${c.year?`<span>${escHtml(c.year)}</span>`:''}${c.journal?`<span>${escHtml(c.journal.substring(0,50))}</span>`:''}${doiLink?`<span>${doiLink}</span>`:''}</div>
+    ${result?.note?`<div class="citation-note ${css}">${escHtml(result.note)}</div>`:''}
+    ${result&&result.confidence>=0?`<div class="confidence-bar-wrap"><div class="confidence-bar ${css}" style="width:${result.confidence}%"></div></div>`:''}`;
 }
-
-function escHtml(s) {
-  if (!s) return '';
-  return String(s)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
-}
-
-// ── Export CSV ──
-document.getElementById('exportCsvBtn').addEventListener('click', () => {
-  if (!parsedCitations.length) return;
-  const rows = [['#', 'Title', 'Authors', 'Year', 'Journal', 'DOI', 'Status', 'Confidence', 'Note']];
-  parsedCitations.forEach((c, i) => {
-    const r = validationResults[i] || {};
-    rows.push([
-      i + 1,
-      c.title || '',
-      c.author || '',
-      c.year || '',
-      c.journal || '',
-      r.foundDoi || c.doi || '',
-      r.status || '',
-      r.confidence >= 0 ? r.confidence + '%' : '',
-      r.note || ''
-    ]);
-  });
-  const csv = rows.map(r => r.map(cell => '"' + String(cell).replace(/"/g, '""') + '"').join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'citecheck-results.csv';
-  a.click();
+function escHtml(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+document.getElementById('exportCsvBtn').addEventListener('click',()=>{
+  if(!parsedCitations.length)return;
+  const rows=[['#','Title','Authors','Year','Journal','DOI','Status','Confidence','Note']];
+  parsedCitations.forEach((c,i)=>{const r=validationResults[i]||{};rows.push([i+1,c.title||'',c.author||'',c.year||'',c.journal||'',r.foundDoi||c.doi||'',r.status||'',r.confidence>=0?r.confidence+'%':'',r.note||'']);});
+  const csv=rows.map(r=>r.map(cell=>'"'+String(cell).replace(/"/g,'""')+'"').join(',')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='citecheck-results.csv';a.click();
 });
 </script>
-
 </body>
 </html>
