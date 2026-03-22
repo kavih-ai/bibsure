@@ -1,4 +1,4 @@
-# CiteCheck — Architecture Spec & Changelog
+# BibSure — Architecture Spec & Changelog
 
 > Maintained by: Kavih AI Technologies Pvt. Ltd.
 > Follow PickrSwipe conventions: single HTML file MVP, Vercel deploy, changelog at bottom.
@@ -7,7 +7,7 @@
 
 ## Project Overview
 
-CiteCheck validates academic citations against public databases to detect AI-hallucinated (fake) references. It works entirely client-side — no server, no uploads.
+BibSure validates academic citations against public databases to detect AI-hallucinated (fake) references. It works entirely client-side — no server, no uploads.
 
 **Live URL:** TBD (deploy to Vercel)
 **GitHub:** TBD (create under kavih-ai org)
@@ -25,7 +25,7 @@ CiteCheck validates academic citations against public databases to detect AI-hal
 
 ### Key Files
 ```
-citecheck/
+bibsure/
   index.html        ← entire app
   privacy.html      ← privacy policy
   terms.html        ← terms of use
@@ -75,10 +75,10 @@ citecheck/
 
 ### VSCode Extension (Skeleton)
 
-**Name:** `citecheck-vscode`
+**Name:** `bibsure-vscode`
 **Functionality:**
-- Command: `CiteCheck: Validate .bib file` → opens results panel
-- Command: `CiteCheck: Validate selection` → validate highlighted citation text
+- Command: `BibSure: Validate .bib file` → opens results panel
+- Command: `BibSure: Validate selection` → validate highlighted citation text
 - Hover provider: hover over `\cite{key}` in LaTeX → show validation status inline
 - Diagnostic provider: red squiggles on unverified citations
 
@@ -87,7 +87,7 @@ citecheck/
 - Calls CrossRef directly from extension (no server needed)
 - Results shown in `vscode.window.createWebviewPanel`
 
-**Folder:** `citecheck/vscode-extension/`
+**Folder:** `bibsure/vscode-extension/`
 **Entry point:** `extension.ts` → `activate()` registers commands
 
 **To create:**
@@ -122,12 +122,12 @@ yo code  # select "New Extension (TypeScript)"
 
 ### Custom GPT (ChatGPT Store)
 
-**Name:** CiteCheck GPT
+**Name:** BibSure GPT
 **Tagline:** "Paste any citation — I'll tell you if it's real or AI-hallucinated."
 
 **System prompt template:**
 ```
-You are CiteCheck, an academic citation validator. When a user provides a citation:
+You are BibSure, an academic citation validator. When a user provides a citation:
 1. Extract: title, authors, year, journal, DOI (if present)
 2. Search CrossRef API at https://api.crossref.org/works?query.bibliographic={title}
 3. Compare returned metadata to the user's citation
@@ -165,7 +165,7 @@ Always be honest about uncertainty. Never guess that a citation is real without 
 
 | Name | Domain | Vibe |
 |---|---|---|
-| **CiteCheck** | citecheck.app | Clear, functional |
+| **BibSure** | bibsure.app | Clear, functional |
 | **RefGuard** | refguard.io | Security / protection angle |
 | **CiteLens** | citelens.com | Analysis / clarity |
 | **TrueCite** | truecite.app | Trust / authenticity |
@@ -177,7 +177,7 @@ Always be honest about uncertainty. Never guess that a citation is real without 
 
 ## Differentiators vs Competitors
 
-| Feature | CiteCheck | CiteSure | SwanRef | Citea |
+| Feature | BibSure | CiteSure | SwanRef | Citea |
 |---|---|---|---|---|
 | .bib file upload | ✅ | ❌ | ❌ | ❌ |
 | .ris file upload | ✅ | ❌ | ❌ | ❌ |

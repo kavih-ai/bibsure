@@ -1,8 +1,8 @@
 /**
- * CiteCheck for Zotero — Bootstrap Script
+ * BibSure for Zotero — Bootstrap Script
  * Zotero 6/7 Plugin Entry Point
  *
- * Registers a menu item under Tools → CiteCheck
+ * Registers a menu item under Tools → BibSure
  * and validates selected library items against CrossRef API.
  */
 
@@ -11,42 +11,42 @@
 // ── Plugin lifecycle hooks (Zotero 7 bootstrap API) ──
 
 function install(data, reason) {
-  Zotero.debug('[CiteCheck] Plugin installed');
+  Zotero.debug('[BibSure] Plugin installed');
 }
 
 function uninstall(data, reason) {
-  Zotero.debug('[CiteCheck] Plugin uninstalled');
+  Zotero.debug('[BibSure] Plugin uninstalled');
 }
 
 async function startup(data, reason) {
   await Zotero.initializationPromise;
-  CiteCheck.init();
-  Zotero.debug('[CiteCheck] Plugin started');
+  BibSure.init();
+  Zotero.debug('[BibSure] Plugin started');
 }
 
 function shutdown(data, reason) {
-  CiteCheck.uninit();
-  Zotero.debug('[CiteCheck] Plugin shutdown');
+  BibSure.uninit();
+  Zotero.debug('[BibSure] Plugin shutdown');
 }
 
-// ── CiteCheck Namespace ──
+// ── BibSure Namespace ──
 
-var CiteCheck = {
+var BibSure = {
 
   CROSSREF_BASE: 'https://api.crossref.org',
-  PLUGIN_ID: 'citecheck@kavihai.com',
-  MENU_ID: 'citecheck-menu',
+  PLUGIN_ID: 'bibsure@kavihai.com',
+  MENU_ID: 'bibsure-menu',
 
   // ── Initialize plugin ──
   init() {
     this._addMenuItems();
     this._registerObservers();
-    Zotero.debug('[CiteCheck] Initialized');
+    Zotero.debug('[BibSure] Initialized');
   },
 
   uninit() {
     this._removeMenuItems();
-    Zotero.debug('[CiteCheck] Uninitialized');
+    Zotero.debug('[BibSure] Uninitialized');
   },
 
   // ── Add Tools menu entries ──
@@ -60,13 +60,13 @@ var CiteCheck = {
 
     // Separator
     const sep = doc.createElementNS('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul', 'menuseparator');
-    sep.id = 'citecheck-sep';
+    sep.id = 'bibsure-sep';
     toolsMenu.appendChild(sep);
 
     // Main validate menu item
     const menuItem = doc.createElementNS('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul', 'menuitem');
     menuItem.id = this.MENU_ID;
-    menuItem.setAttribute('label', 'CiteCheck — Validate Selected Citations');
+    menuItem.setAttribute('label', 'BibSure — Validate Selected Citations');
     menuItem.setAttribute('accesskey', 'C');
     menuItem.addEventListener('command', () => this.validateSelected());
     toolsMenu.appendChild(menuItem);
@@ -74,18 +74,18 @@ var CiteCheck = {
     // Validate all in collection
     const menuItemAll = doc.createElementNS('http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul', 'menuitem');
     menuItemAll.id = this.MENU_ID + '-all';
-    menuItemAll.setAttribute('label', 'CiteCheck — Validate Entire Collection');
+    menuItemAll.setAttribute('label', 'BibSure — Validate Entire Collection');
     menuItemAll.addEventListener('command', () => this.validateAll());
     toolsMenu.appendChild(menuItemAll);
 
-    Zotero.debug('[CiteCheck] Menu items added');
+    Zotero.debug('[BibSure] Menu items added');
   },
 
   _removeMenuItems() {
     const win = Zotero.getMainWindow();
     if (!win) return;
     const doc = win.document;
-    for (const id of [this.MENU_ID, this.MENU_ID + '-all', 'citecheck-sep']) {
+    for (const id of [this.MENU_ID, this.MENU_ID + '-all', 'bibsure-sep']) {
       const el = doc.getElementById(id);
       if (el) el.remove();
     }
@@ -97,14 +97,14 @@ var CiteCheck = {
     this._observerID = Zotero.Notifier.registerObserver(
       { notify: (event, type, ids) => this._onNotify(event, type, ids) },
       ['item'],
-      'citecheck'
+      'bibsure'
     );
   },
 
   _onNotify(event, type, ids) {
     // Update UI when items change
     if (event === 'modify') {
-      Zotero.debug('[CiteCheck] Items modified: ' + ids.join(', '));
+      Zotero.debug('[BibSure] Items modified: ' + ids.join(', '));
     }
   },
 
@@ -113,7 +113,7 @@ var CiteCheck = {
     const items = Zotero.getActiveZoteroPane().getSelectedItems();
 
     if (!items || items.length === 0) {
-      this._showDialog('CiteCheck', 'Please select one or more library items to validate.', 'warning');
+      this._showDialog('BibSure', 'Please select one or more library items to validate.', 'warning');
       return;
     }
 
@@ -135,14 +135,14 @@ var CiteCheck = {
     items = items.filter(item => item.isRegularItem());
 
     if (!items || items.length === 0) {
-      this._showDialog('CiteCheck', 'No items found in the current collection.', 'warning');
+      this._showDialog('BibSure', 'No items found in the current collection.', 'warning');
       return;
     }
 
     if (items.length > 50) {
       const confirm = Services.prompt.confirm(
         null,
-        'CiteCheck',
+        'BibSure',
         `Validate all ${items.length} items? This may take a few minutes.`
       );
       if (!confirm) return;
@@ -156,7 +156,7 @@ var CiteCheck = {
   async _validateItems(items) {
     const results = [];
     const progressWin = new Zotero.ProgressWindow({ closeOnClick: false });
-    progressWin.changeHeadline('CiteCheck — Validating Citations');
+    progressWin.changeHeadline('BibSure — Validating Citations');
     progressWin.show();
 
     for (let i = 0; i < items.length; i++) {
@@ -171,7 +171,7 @@ var CiteCheck = {
         .map(c => c.lastName + (c.firstName ? ', ' + c.firstName[0] : ''))
         .join('; ');
 
-      progressWin.changeHeadline(`CiteCheck — Checking ${i + 1}/${items.length}: ${title?.substring(0, 40)}`);
+      progressWin.changeHeadline(`BibSure — Checking ${i + 1}/${items.length}: ${title?.substring(0, 40)}`);
 
       const result = await this._validateOne({ title, doi, year, author: authors });
       results.push({ item, title, doi, year, authors, ...result });
@@ -191,17 +191,17 @@ var CiteCheck = {
 
   // ── Tag item in Zotero library ──
   async _tagItem(item, status) {
-    // Remove old CiteCheck tags first
-    const oldTags = ['CiteCheck: Verified', 'CiteCheck: Not Found', 'CiteCheck: Partial', 'CiteCheck: Unknown'];
+    // Remove old BibSure tags first
+    const oldTags = ['BibSure: Verified', 'BibSure: Not Found', 'BibSure: Partial', 'BibSure: Unknown'];
     for (const tag of oldTags) {
       item.removeTag(tag);
     }
 
     const tagMap = {
-      'verified': 'CiteCheck: Verified',
-      'not_found': 'CiteCheck: Not Found',
-      'partial': 'CiteCheck: Partial Match',
-      'unknown': 'CiteCheck: Unknown'
+      'verified': 'BibSure: Verified',
+      'not_found': 'BibSure: Not Found',
+      'partial': 'BibSure: Partial Match',
+      'unknown': 'BibSure: Unknown'
     };
 
     if (tagMap[status]) {
@@ -217,7 +217,7 @@ var CiteCheck = {
       const doi = citation.doi.replace(/^https?:\/\/(?:dx\.)?doi\.org\//, '').trim();
       try {
         const response = await fetch(`${this.CROSSREF_BASE}/works/${encodeURIComponent(doi)}`, {
-          headers: { 'Accept': 'application/json', 'User-Agent': 'CiteCheck/1.0 (https://citecheck.kavihai.com; mailto:contact@kavihai.com)' }
+          headers: { 'Accept': 'application/json', 'User-Agent': 'BibSure/1.0 (https://bibsure.kavihai.com; mailto:contact@kavihai.com)' }
         });
         if (response.ok) {
           const data = await response.json();
@@ -226,7 +226,7 @@ var CiteCheck = {
           return { status: 'not_found', confidence: 0, note: 'DOI not found in CrossRef database.' };
         }
       } catch (e) {
-        Zotero.debug('[CiteCheck] DOI lookup error: ' + e.message);
+        Zotero.debug('[BibSure] DOI lookup error: ' + e.message);
       }
     }
 
@@ -236,7 +236,7 @@ var CiteCheck = {
       try {
         const response = await fetch(
           `${this.CROSSREF_BASE}/works?query.bibliographic=${query}&rows=1&select=title,author,published,DOI,container-title`,
-          { headers: { 'Accept': 'application/json', 'User-Agent': 'CiteCheck/1.0 (https://citecheck.kavihai.com; mailto:contact@kavihai.com)' } }
+          { headers: { 'Accept': 'application/json', 'User-Agent': 'BibSure/1.0 (https://bibsure.kavihai.com; mailto:contact@kavihai.com)' } }
         );
         if (response.ok) {
           const data = await response.json();
@@ -245,7 +245,7 @@ var CiteCheck = {
           return { status: 'not_found', confidence: 0, note: 'No match found in CrossRef. Possible AI-hallucination.' };
         }
       } catch (e) {
-        Zotero.debug('[CiteCheck] Search error: ' + e.message);
+        Zotero.debug('[BibSure] Search error: ' + e.message);
       }
     }
 
@@ -301,7 +301,7 @@ var CiteCheck = {
     const partial  = results.filter(r => r.status === 'partial').length;
     const total    = results.length;
 
-    let msg = `CiteCheck Results\n`;
+    let msg = `BibSure Results\n`;
     msg += `${'='.repeat(40)}\n`;
     msg += `Total checked: ${total}\n`;
     msg += `[OK] Verified: ${verified}\n`;
@@ -316,7 +316,7 @@ var CiteCheck = {
       msg += `    ${r.note}\n`;
     }
 
-    this._showDialog('CiteCheck — Validation Complete', msg, 'info');
+    this._showDialog('BibSure — Validation Complete', msg, 'info');
   },
 
   _showDialog(title, message, type) {

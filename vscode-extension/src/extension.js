@@ -1,5 +1,5 @@
 /**
- * CiteCheck VSCode Extension — Main Entry Point
+ * BibSure VSCode Extension — Main Entry Point
  *
  * Features:
  * - Real-time BibTeX validation via CrossRef API
@@ -16,8 +16,8 @@ const vscode = require('vscode');
 
 // ── Constants ──
 const CROSSREF_BASE = 'https://api.crossref.org';
-const EXTENSION_ID = 'citecheck';
-const DIAGNOSTIC_SOURCE = 'CiteCheck';
+const EXTENSION_ID = 'bibsure';
+const DIAGNOSTIC_SOURCE = 'BibSure';
 
 // ── State ──
 let diagnosticCollection;
@@ -29,7 +29,7 @@ let decorationType;
  * Extension activation entry point
  */
 function activate(context) {
-  console.log('[CiteCheck] Extension activated');
+  console.log('[BibSure] Extension activated');
 
   // Create diagnostic collection for inline errors
   diagnosticCollection = vscode.languages.createDiagnosticCollection(DIAGNOSTIC_SOURCE);
@@ -37,9 +37,9 @@ function activate(context) {
 
   // Status bar item
   statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
-  statusBarItem.command = 'citecheck.showPanel';
-  statusBarItem.text = '$(check) CiteCheck';
-  statusBarItem.tooltip = 'CiteCheck — Click to show citation results';
+  statusBarItem.command = 'bibsure.showPanel';
+  statusBarItem.text = '$(check) BibSure';
+  statusBarItem.tooltip = 'BibSure — Click to show citation results';
   statusBarItem.show();
   context.subscriptions.push(statusBarItem);
 
@@ -55,10 +55,10 @@ function activate(context) {
 
   // ── Register Commands ──
   context.subscriptions.push(
-    vscode.commands.registerCommand('citecheck.validateFile', () => validateActiveFile()),
-    vscode.commands.registerCommand('citecheck.validateSelection', () => validateSelection()),
-    vscode.commands.registerCommand('citecheck.validateWorkspace', () => validateWorkspace()),
-    vscode.commands.registerCommand('citecheck.showPanel', () => showResultsPanel(context))
+    vscode.commands.registerCommand('bibsure.validateFile', () => validateActiveFile()),
+    vscode.commands.registerCommand('bibsure.validateSelection', () => validateSelection()),
+    vscode.commands.registerCommand('bibsure.validateWorkspace', () => validateWorkspace()),
+    vscode.commands.registerCommand('bibsure.showPanel', () => showResultsPanel(context))
   );
 
   // ── Validate on save ──
@@ -101,11 +101,11 @@ function activate(context) {
 async function validateActiveFile() {
   const editor = vscode.window.activeTextEditor;
   if (!editor) {
-    vscode.window.showWarningMessage('CiteCheck: No active editor found.');
+    vscode.window.showWarningMessage('BibSure: No active editor found.');
     return;
   }
   if (editor.document.languageId !== 'bibtex') {
-    vscode.window.showWarningMessage('CiteCheck: This command works on .bib files only.');
+    vscode.window.showWarningMessage('BibSure: This command works on .bib files only.');
     return;
   }
   await validateDocument(editor.document);
@@ -117,13 +117,13 @@ async function validateActiveFile() {
 async function validateSelection() {
   const editor = vscode.window.activeTextEditor;
   if (!editor || editor.selection.isEmpty) {
-    vscode.window.showWarningMessage('CiteCheck: Select a BibTeX entry to validate.');
+    vscode.window.showWarningMessage('BibSure: Select a BibTeX entry to validate.');
     return;
   }
   const selectedText = editor.document.getText(editor.selection);
   const citations = parseBib(selectedText);
   if (citations.length === 0) {
-    vscode.window.showWarningMessage('CiteCheck: No valid BibTeX entries found in selection.');
+    vscode.window.showWarningMessage('BibSure: No valid BibTeX entries found in selection.');
     return;
   }
   await validateCitationsWithProgress(citations, editor.document.uri);
@@ -135,7 +135,7 @@ async function validateSelection() {
 async function validateWorkspace() {
   const bibFiles = await vscode.workspace.findFiles('**/*.bib', '**/node_modules/**');
   if (bibFiles.length === 0) {
-    vscode.window.showInformationMessage('CiteCheck: No .bib files found in workspace.');
+    vscode.window.showInformationMessage('BibSure: No .bib files found in workspace.');
     return;
   }
 
@@ -143,7 +143,7 @@ async function validateWorkspace() {
     const doc = await vscode.workspace.openTextDocument(fileUri);
     await validateDocument(doc);
   }
-  vscode.window.showInformationMessage(`CiteCheck: Validated ${bibFiles.length} .bib file(s).`);
+  vscode.window.showInformationMessage(`BibSure: Validated ${bibFiles.length} .bib file(s).`);
 }
 
 /**
@@ -176,7 +176,7 @@ async function validateCitationsWithProgress(citations, uri) {
 
   await vscode.window.withProgress({
     location: vscode.ProgressLocation.Notification,
-    title: 'CiteCheck: Validating citations…',
+    title: 'BibSure: Validating citations…',
     cancellable: true
   }, async (progress, token) => {
     for (let i = 0; i < citations.length; i++) {
@@ -199,7 +199,7 @@ async function validateCitationsWithProgress(citations, uri) {
         if (citation._range) {
           diagnostics.push(new vscode.Diagnostic(
             citation._range,
-            `CiteCheck: Citation not found in CrossRef. ${result.note}`,
+            `BibSure: Citation not found in CrossRef. ${result.note}`,
             vscode.DiagnosticSeverity.Error
           ));
         }
@@ -209,7 +209,7 @@ async function validateCitationsWithProgress(citations, uri) {
         if (citation._range) {
           diagnostics.push(new vscode.Diagnostic(
             citation._range,
-            `CiteCheck: Partial match only (${result.confidence}%). ${result.note}`,
+            `BibSure: Partial match only (${result.confidence}%). ${result.note}`,
             vscode.DiagnosticSeverity.Warning
           ));
         }
@@ -282,7 +282,7 @@ async function validateOne(citation) {
 
   const headers = {
     'Accept': 'application/json',
-    'User-Agent': `CiteCheck-VSCode/1.0 (https://citecheck.kavihai.com; mailto:${email})`
+    'User-Agent': `BibSure-VSCode/1.0 (https://bibsure.kavihai.com; mailto:${email})`
   };
 
   // 1. DOI lookup
@@ -373,7 +373,7 @@ function provideHover(document, position) {
   const result = validationResults.get(key);
 
   if (!result) {
-    return new vscode.Hover(new vscode.MarkdownString(`**CiteCheck** \`${key}\`: *Not yet validated*`));
+    return new vscode.Hover(new vscode.MarkdownString(`**BibSure** \`${key}\`: *Not yet validated*`));
   }
 
   const icon = { verified: '✅', not_found: '❌', partial: '⚠️', unknown: '❓' }[result.status] || '❓';
@@ -381,7 +381,7 @@ function provideHover(document, position) {
   const confStr = result.confidence >= 0 ? ` (${result.confidence}% confidence)` : '';
 
   const md = new vscode.MarkdownString();
-  md.appendMarkdown(`**CiteCheck** ${icon} **${label}**${confStr}\n\n`);
+  md.appendMarkdown(`**BibSure** ${icon} **${label}**${confStr}\n\n`);
   md.appendMarkdown(`${result.note}\n\n`);
   if (result.foundDoi) {
     md.appendMarkdown(`[View on CrossRef](https://doi.org/${result.foundDoi})`);
@@ -425,22 +425,22 @@ function updateDecorations(uri, citations) {
  */
 function updateStatusBar(verified, partial, notFound) {
   if (verified === -1) {
-    statusBarItem.text = '$(sync~spin) CiteCheck…';
-    statusBarItem.tooltip = 'CiteCheck: Validating…';
+    statusBarItem.text = '$(sync~spin) BibSure…';
+    statusBarItem.tooltip = 'BibSure: Validating…';
     return;
   }
   const total = verified + partial + notFound;
   if (notFound > 0) {
-    statusBarItem.text = `$(error) CiteCheck: ${notFound} fake`;
+    statusBarItem.text = `$(error) BibSure: ${notFound} fake`;
     statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.errorBackground');
   } else if (partial > 0) {
-    statusBarItem.text = `$(warning) CiteCheck: ${partial} partial`;
+    statusBarItem.text = `$(warning) BibSure: ${partial} partial`;
     statusBarItem.backgroundColor = new vscode.ThemeColor('statusBarItem.warningBackground');
   } else {
-    statusBarItem.text = `$(check-all) CiteCheck: ${verified} OK`;
+    statusBarItem.text = `$(check-all) BibSure: ${verified} OK`;
     statusBarItem.backgroundColor = undefined;
   }
-  statusBarItem.tooltip = `CiteCheck: ${verified} verified, ${partial} partial, ${notFound} not found (${total} total)`;
+  statusBarItem.tooltip = `BibSure: ${verified} verified, ${partial} partial, ${notFound} not found (${total} total)`;
 }
 
 /**
@@ -448,8 +448,8 @@ function updateStatusBar(verified, partial, notFound) {
  */
 function showResultsPanel(context) {
   const panel = vscode.window.createWebviewPanel(
-    'citecheckResults',
-    'CiteCheck Results',
+    'bibsureResults',
+    'BibSure Results',
     vscode.ViewColumn.Beside,
     { enableScripts: true }
   );
@@ -478,7 +478,7 @@ function showResultsPanel(context) {
 </style>
 </head>
 <body>
-<h1>CiteCheck — Validation Results</h1>
+<h1>BibSure — Validation Results</h1>
 <div class="summary">
   <div class="card"><div class="num">${results.length}</div><div>Total</div></div>
   <div class="card"><div class="num">${verified}</div><div>[OK] Verified</div></div>

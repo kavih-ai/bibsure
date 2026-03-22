@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CiteCheck — VSCode Extension</title>
+  <title>BibSure — VSCode Extension</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -62,6 +62,7 @@
       gap: 10px;
     }
     .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--vermilion); flex-shrink: 0; }
+    .logo-samurai { height: 36px; width: auto; mix-blend-mode: multiply; flex-shrink: 0; display: block; }
     .back-btn {
       font-family: var(--sans);
       font-size: 0.68rem;
@@ -300,8 +301,8 @@
 
 <header>
   <a class="logo" href="index.html">
-    <span class="logo-dot"></span>
-    CiteCheck
+    <img src="samurai logo.png" alt="" class="logo-samurai" />
+    BibSure
   </a>
   <a class="back-btn" href="index.html">← Back</a>
 </header>
@@ -309,7 +310,7 @@
 <div class="page-hero">
   <div>
     <div class="fig-label">(fig. 01) — VSCode Integration</div>
-    <h1 class="page-title">CiteCheck for<br><em>VS Code.</em></h1>
+    <h1 class="page-title">BibSure for<br><em>VS Code.</em></h1>
     <p class="page-subtitle">Citation validation in your LaTeX/BibTeX workflow. Inline diagnostics, hover tooltips, live status bar — without leaving your editor.</p>
   </div>
   <svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.15; flex-shrink:0;">
@@ -331,7 +332,7 @@
     <span class="section-num">(fig. 01) — Features</span>
   </div>
 
-  <p class="intro-block">CiteCheck brings citation validation directly into your LaTeX/BibTeX workflow in VS Code. Get inline diagnostics, hover tooltips on <code style="font-family:'Courier New',monospace;font-size:0.9em;background:var(--cream-dark);padding:1px 5px;">\cite{}</code> keys, real-time validation, and a dedicated results panel — without leaving your editor.</p>
+  <p class="intro-block">BibSure brings citation validation directly into your LaTeX/BibTeX workflow in VS Code. Get inline diagnostics, hover tooltips on <code style="font-family:'Courier New',monospace;font-size:0.9em;background:var(--cream-dark);padding:1px 5px;">\cite{}</code> keys, real-time validation, and a dedicated results panel — without leaving your editor.</p>
 
   <div class="feature-grid">
     <div class="feature-item">
@@ -372,7 +373,7 @@
   </div>
   <div class="step">
     <div class="step-num">2</div>
-    <div class="step-body">Search for <strong>"CiteCheck"</strong> by kavihai</div>
+    <div class="step-body">Search for <strong>"BibSure"</strong> by kavihai</div>
   </div>
   <div class="step">
     <div class="step-num">3</div>
@@ -385,8 +386,8 @@
 
   <div class="sub-heading">Manual / Developer Installation</div>
   <div class="code-block"><span class="comment"># Clone the repo</span>
-git clone https://github.com/kavihai/citecheck-vscode
-cd citecheck-vscode
+git clone https://github.com/kavihai/bibsure-vscode
+cd bibsure-vscode
 
 <span class="comment"># Install dependencies</span>
 npm install
@@ -395,7 +396,7 @@ npm install
 npx vsce package
 
 <span class="comment"># Install the .vsix file</span>
-code --install-extension citecheck-1.0.0.vsix</div>
+code --install-extension bibsure-1.0.0.vsix</div>
 
   <div class="section-divider">
     <span class="section-num">(fig. 03) — Commands &amp; Settings</span>
@@ -404,22 +405,22 @@ code --install-extension citecheck-1.0.0.vsix</div>
   <h2 class="section-heading">Commands &amp; <em>keybindings.</em></h2>
 
   <div class="code-block"><span class="comment"># Command Palette (Ctrl+Shift+P):</span>
-CiteCheck: Validate Current .bib File
-CiteCheck: Validate Selected Citation
-CiteCheck: Validate All .bib Files in Workspace
-CiteCheck: Show Results Panel
+BibSure: Validate Current .bib File
+BibSure: Validate Selected Citation
+BibSure: Validate All .bib Files in Workspace
+BibSure: Show Results Panel
 
 <span class="comment"># Right-click menu in .bib files:</span>
-→ CiteCheck: Validate Current .bib File
-→ CiteCheck: Validate Selected Citation</div>
+→ BibSure: Validate Current .bib File
+→ BibSure: Validate Selected Citation</div>
 
   <div class="sub-heading">Settings (settings.json)</div>
   <div class="settings-table">
-    <div class="setting-row"><span class="setting-key">citecheck.enableOnSave</span><span class="setting-val">true</span></div>
-    <div class="setting-row"><span class="setting-key">citecheck.confidenceThreshold</span><span class="setting-val">80</span></div>
-    <div class="setting-row"><span class="setting-key">citecheck.crossrefEmail</span><span class="setting-val">"your@email.com"</span></div>
-    <div class="setting-row"><span class="setting-key">citecheck.showInlineDecorations</span><span class="setting-val">true</span></div>
-    <div class="setting-row"><span class="setting-key">citecheck.rateLimitMs</span><span class="setting-val">120</span></div>
+    <div class="setting-row"><span class="setting-key">bibsure.enableOnSave</span><span class="setting-val">true</span></div>
+    <div class="setting-row"><span class="setting-key">bibsure.confidenceThreshold</span><span class="setting-val">80</span></div>
+    <div class="setting-row"><span class="setting-key">bibsure.crossrefEmail</span><span class="setting-val">"your@email.com"</span></div>
+    <div class="setting-row"><span class="setting-key">bibsure.showInlineDecorations</span><span class="setting-val">true</span></div>
+    <div class="setting-row"><span class="setting-key">bibsure.rateLimitMs</span><span class="setting-val">120</span></div>
   </div>
 
   <div class="section-divider">
@@ -461,7 +462,7 @@ CiteCheck: Show Results Panel
   </div>
   <div class="step">
     <div class="step-num">→</div>
-    <div class="step-body">Status bar updates to show: <code>$(check-all) CiteCheck: 12 OK | 2 fake</code></div>
+    <div class="step-body">Status bar updates to show: <code>$(check-all) BibSure: 12 OK | 2 fake</code></div>
   </div>
 
   <div class="sub-heading">Requirements</div>

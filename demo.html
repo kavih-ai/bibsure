@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CiteCheck — Interactive Demo</title>
+  <title>BibSure — Interactive Demo</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -62,6 +62,7 @@
       gap: 10px;
     }
     .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--vermilion); flex-shrink: 0; }
+    .logo-samurai { height: 36px; width: auto; mix-blend-mode: multiply; flex-shrink: 0; display: block; }
     .back-btn {
       font-family: var(--sans);
       font-size: 0.68rem;
@@ -458,8 +459,8 @@
 
 <header>
   <a class="logo" href="index.html">
-    <span class="logo-dot"></span>
-    CiteCheck
+    <img src="samurai logo.png" alt="" class="logo-samurai" />
+    BibSure
   </a>
   <a class="back-btn" href="index.html">← Back to App</a>
 </header>
@@ -471,7 +472,7 @@
 <div class="page-hero">
   <div>
     <div class="fig-label">(fig. 01) — Live Demonstration</div>
-    <h1 class="page-title">See CiteCheck<br><em>in action.</em></h1>
+    <h1 class="page-title">See BibSure<br><em>in action.</em></h1>
     <p class="page-subtitle">Load a sample dataset or paste your own BibTeX. Every query runs against the live CrossRef API — no mock data, no shortcuts.</p>
   </div>
   <svg class="hero-ink" width="120" height="140" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -554,7 +555,7 @@
       <div class="plugin-card">
         <div class="plugin-card-fig">Plugin — 01</div>
         <h3>Zotero<br><em>Plugin</em></h3>
-        <p>Validate citations directly from your Zotero library. Right-click any item and select CiteCheck to verify against CrossRef in real time.</p>
+        <p>Validate citations directly from your Zotero library. Right-click any item and select BibSure to verify against CrossRef in real time.</p>
         <div class="plugin-divider"></div>
         <ul class="plugin-list">
           <li>Validate selected items</li>
@@ -605,7 +606,7 @@
     <div class="vscode-preview">
       <div class="vscode-preview-label">VSCode Extension — Simulated Preview</div>
       <div class="code-preview">
-        <div style="color:#6a9955;">// example.bib — CiteCheck active</div>
+        <div style="color:#6a9955;">// example.bib — BibSure active</div>
         <div><span style="color:#569cd6;">@article</span><span style="color:#9cdcfe;">{lecun2015deep,</span> <span style="color:#4ec9b0; font-size:0.72rem;">✓ 97% — verified</span></div>
         <div style="padding-left:20px;"><span style="color:#ce9178;">title</span> = {Deep learning},</div>
         <div style="padding-left:20px;"><span style="color:#ce9178;">author</span> = {LeCun, Yann and Bengio, Yoshua and Hinton, Geoffrey},</div>
@@ -619,8 +620,8 @@
         <div style="padding-left:20px;"><span style="color:#ce9178;">year</span> = {2024}</div>
         <div>}</div>
         <div style="height:6px;"></div>
-        <div style="color:#f44747; font-size:0.72rem;">● CiteCheck: 1 citation not found — [fake2024hallucinated]</div>
-        <div style="color:#4ec9b0; font-size:0.72rem; margin-top:4px;">$(check-all) CiteCheck: 1 OK | 1 fake | 0 partial</div>
+        <div style="color:#f44747; font-size:0.72rem;">● BibSure: 1 citation not found — [fake2024hallucinated]</div>
+        <div style="color:#4ec9b0; font-size:0.72rem; margin-top:4px;">$(check-all) BibSure: 1 OK | 1 fake | 0 partial</div>
       </div>
     </div>
   </div>

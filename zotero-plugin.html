@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CiteCheck — Zotero Plugin</title>
+  <title>BibSure — Zotero Plugin</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
@@ -62,6 +62,7 @@
       gap: 10px;
     }
     .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--vermilion); flex-shrink: 0; }
+    .logo-samurai { height: 36px; width: auto; mix-blend-mode: multiply; flex-shrink: 0; display: block; }
     .back-btn {
       font-family: var(--sans);
       font-size: 0.68rem;
@@ -308,8 +309,8 @@
 
 <header>
   <a class="logo" href="index.html">
-    <span class="logo-dot"></span>
-    CiteCheck
+    <img src="samurai logo.png" alt="" class="logo-samurai" />
+    BibSure
   </a>
   <a class="back-btn" href="index.html">← Back</a>
 </header>
@@ -317,7 +318,7 @@
 <div class="page-hero">
   <div>
     <div class="fig-label">(fig. 01) — Zotero Integration</div>
-    <h1 class="page-title">CiteCheck for<br><em>Zotero.</em></h1>
+    <h1 class="page-title">BibSure for<br><em>Zotero.</em></h1>
     <p class="page-subtitle">Validate citations directly from your reference manager. Right-click, verify, auto-tag — powered by CrossRef's 150M+ publication database.</p>
   </div>
   <svg width="100" height="120" viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.15; flex-shrink:0;">
@@ -339,12 +340,12 @@
     <span class="section-num">(fig. 01) — Features</span>
   </div>
 
-  <p class="intro-block">CiteCheck integrates directly with your Zotero reference manager. Validate citations with a right-click, auto-tag suspicious entries, and batch-validate entire collections — all without leaving your workflow.</p>
+  <p class="intro-block">BibSure integrates directly with your Zotero reference manager. Validate citations with a right-click, auto-tag suspicious entries, and batch-validate entire collections — all without leaving your workflow.</p>
 
   <div class="feature-grid">
     <div class="feature-item">
       <strong>Right-Click Validation</strong>
-      <span>Select items → Tools → CiteCheck → Validate. No window-switching required.</span>
+      <span>Select items → Tools → BibSure → Validate. No window-switching required.</span>
     </div>
     <div class="feature-item">
       <strong>Auto-Tagging</strong>
@@ -376,7 +377,7 @@
 
   <div class="step">
     <div class="step-num">1</div>
-    <div class="step-body">Download the <code>citecheck-zotero.xpi</code> file below.</div>
+    <div class="step-body">Download the <code>bibsure-zotero.xpi</code> file below.</div>
   </div>
   <div class="step">
     <div class="step-num">2</div>
@@ -392,10 +393,10 @@
   </div>
   <div class="step">
     <div class="step-num">5</div>
-    <div class="step-body">Restart Zotero. CiteCheck appears under the <strong>Tools</strong> menu.</div>
+    <div class="step-body">Restart Zotero. BibSure appears under the <strong>Tools</strong> menu.</div>
   </div>
 
-  <a class="download-btn" href="zotero-plugin/manifest.json" download="citecheck-zotero.json">
+  <a class="download-btn" href="zotero-plugin/manifest.json" download="bibsure-zotero.json">
     ↓ &nbsp; Download Plugin Files
   </a>
 
@@ -411,7 +412,7 @@
   </div>
   <div class="step">
     <div class="step-num">→</div>
-    <div class="step-body">Go to <strong>Tools → CiteCheck → Validate Selected Citations</strong>.</div>
+    <div class="step-body">Go to <strong>Tools → BibSure → Validate Selected Citations</strong>.</div>
   </div>
   <div class="step">
     <div class="step-num">→</div>
@@ -424,10 +425,10 @@
 
   <div class="sub-heading">Tags applied to items</div>
   <div class="tags-wrap">
-    <span class="tag verified">CiteCheck: Verified</span>
-    <span class="tag notfound">CiteCheck: Not Found</span>
-    <span class="tag partial">CiteCheck: Partial Match</span>
-    <span class="tag">CiteCheck: Unknown</span>
+    <span class="tag verified">BibSure: Verified</span>
+    <span class="tag notfound">BibSure: Not Found</span>
+    <span class="tag partial">BibSure: Partial Match</span>
+    <span class="tag">BibSure: Unknown</span>
   </div>
 
   <div class="section-divider">
@@ -439,14 +440,14 @@
   <div class="code-block"><span class="comment">// bootstrap.js — Main plugin entry point
 // Located at: zotero-plugin/src/bootstrap.js</span>
 
-<span class="fn">CiteCheck.validateSelected</span>()
+<span class="fn">BibSure.validateSelected</span>()
   → parsedItems: Zotero.getActiveZoteroPane().<span class="fn">getSelectedItems</span>()
   → CrossRef DOI lookup → title search fallback
   → Tags items with validation status
   → Shows results dialog
 
 <span class="comment">// Auto-tagging example:</span>
-item.<span class="fn">addTag</span>(<span class="str">'CiteCheck: Verified'</span>, 1);  <span class="comment">// type 1 = automatic</span>
+item.<span class="fn">addTag</span>(<span class="str">'BibSure: Verified'</span>, 1);  <span class="comment">// type 1 = automatic</span>
 <span class="kw">await</span> item.<span class="fn">saveTx</span>();</div>
 
   <div class="sub-heading">Requirements</div>

@@ -1,4 +1,4 @@
-# CiteCheck
+# BibSure
 
 > Detect AI-hallucinated citations in research papers instantly.
 
