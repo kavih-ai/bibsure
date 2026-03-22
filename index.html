@@ -341,452 +341,376 @@
   </div>
 
   <div class="hero-right">
-    <svg viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <svg viewBox="0 0 600 700" xmlns="http://www.w3.org/2000/svg">
 
-      <!-- ══════════════════════════════════════════════
-           CITECHECK HERO — East Asian Ink Art
-           Scene: Cherry tree · Pavilion · Sun · Scholar
-           ══════════════════════════════════════════════ -->
+      <!-- ══════════════════════════════════════════════════
+           CITECHECK — Sumi-e Hero Illustration
+           Scene: Mountain river · Cherry tree · Samurai scholar
+           Style: Minimalist ink, caricature marker figure
+           ══════════════════════════════════════════════════ -->
 
-      <!-- ── Background ── -->
-      <rect width="600" height="700" fill="#EDE5D8"/>
+      <defs>
+        <filter id="paper" x="0%" y="0%" width="100%" height="100%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" result="noise"/>
+          <feColorMatrix type="saturate" values="0" in="noise" result="grey"/>
+          <feBlend in="SourceGraphic" in2="grey" mode="multiply" result="blend"/>
+          <feComposite in="blend" in2="SourceGraphic" operator="in"/>
+        </filter>
+        <filter id="roughen" x="-5%" y="-5%" width="110%" height="110%">
+          <feTurbulence type="turbulence" baseFrequency="0.035" numOctaves="2" result="noise" seed="5"/>
+          <feDisplacementMap in="SourceGraphic" in2="noise" scale="1.2" xChannelSelector="R" yChannelSelector="G"/>
+        </filter>
+      </defs>
 
-      <!-- Sky ink wash — soft bloom upper-left -->
-      <radialGradient id="skyBloom" cx="25%" cy="18%" r="55%">
-        <stop offset="0%" stop-color="#D4C4A8" stop-opacity="0.45"/>
-        <stop offset="100%" stop-color="#EDE5D8" stop-opacity="0"/>
-      </radialGradient>
-      <rect width="600" height="700" fill="url(#skyBloom)"/>
+      <!-- ── Textured paper background ── -->
+      <rect width="600" height="700" fill="#F0E8D4"/>
+      <rect width="600" height="700" fill="#E4D8BE" opacity="0.35" filter="url(#paper)"/>
+      <!-- Aged edge vignette -->
+      <rect x="0" y="0" width="600" height="700" fill="none" stroke="#C0A870" stroke-width="18" opacity="0.2"/>
 
-      <!-- Distant horizon wash -->
-      <path d="M0 390 Q150 360 300 375 Q450 390 600 362 L600 700 L0 700 Z"
-            fill="#C8B89A" opacity="0.18"/>
+      <!-- Faint sky wash -->
+      <rect x="0" y="0" width="600" height="340" fill="#EAE0CC" opacity="0.28"/>
 
-      <!-- Mist bands -->
-      <rect x="0" y="340" width="600" height="20" fill="#F4EFE6" opacity="0.35" rx="10"/>
-      <rect x="0" y="360" width="600" height="12" fill="#F4EFE6" opacity="0.25" rx="6"/>
+      <!-- ══════════════════════════════════════════════════
+           RED SUN — bold, simple disc, upper left
+           ══════════════════════════════════════════════════ -->
+      <circle cx="112" cy="114" r="44" fill="#C8281E" opacity="0.9"/>
+      <circle cx="100" cy="102" r="15" fill="#E03020" opacity="0.2"/>
 
-      <!-- ── Far mountains (ink wash, very soft) ── -->
-      <path d="M0 420 Q80 330 160 370 Q220 330 290 300 Q360 330 420 290 Q490 320 560 350 Q590 340 600 350 L600 700 L0 700 Z"
-            fill="#C0B090" opacity="0.22"/>
-      <path d="M0 480 Q100 410 200 440 Q280 410 370 380 Q430 400 510 390 Q560 400 600 385 L600 700 L0 700 Z"
-            fill="#B8A880" opacity="0.28"/>
+      <!-- Ink birds in sky -->
+      <path d="M198 84 Q207 77 216 84"   stroke="#1A1208" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M224 72 Q235 64 246 72"   stroke="#1A1208" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <path d="M258 90 Q267 83 276 90"   stroke="#1A1208" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+      <path d="M182 100 Q190 94 198 100" stroke="#1A1208" stroke-width="1.3" fill="none" stroke-linecap="round"/>
 
-      <!-- Ground plane -->
-      <path d="M0 590 Q100 575 200 582 Q300 590 400 578 Q500 568 600 576 L600 700 L0 700 Z"
-            fill="#A89870" opacity="0.32"/>
+      <!-- ══════════════════════════════════════════════════
+           MOUNTAINS — Sumi-e line ridges, minimal
+           ══════════════════════════════════════════════════ -->
 
-      <!-- ══════════════════════════════════════════════
-           RED SUN — upper right
-           ══════════════════════════════════════════════ -->
-      <!-- Halo glow -->
-      <circle cx="490" cy="118" r="52" fill="#C03020" opacity="0.08"/>
-      <circle cx="490" cy="118" r="44" fill="#C03020" opacity="0.12"/>
-      <!-- Sun disc -->
-      <circle cx="490" cy="118" r="36" fill="#C03020" opacity="0.88"/>
-      <!-- Shine highlight -->
-      <ellipse cx="480" cy="106" rx="10" ry="6" fill="#E85040" opacity="0.4" transform="rotate(-20 480 106)"/>
+      <!-- Distant range — very faint ink wash -->
+      <path d="M0 316 Q55 242 118 278 Q172 242 228 262 Q285 234 342 256 Q396 230 454 250 Q510 228 566 246 Q588 236 600 242 L600 700 L0 700 Z"
+            fill="#B8A882" opacity="0.18"/>
+      <path d="M0 316 Q55 242 118 278 Q172 242 228 262 Q285 234 342 256 Q396 230 454 250 Q510 228 566 246 Q588 236 600 242"
+            stroke="#1A1208" stroke-width="0.7" fill="none" opacity="0.22" stroke-linecap="round"/>
 
-      <!-- Birds near sun -->
-      <path d="M420 88 Q430 81 440 88"  stroke="#2C2318" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M446 76 Q458 68 470 76"  stroke="#2C2318" stroke-width="1.6" stroke-linecap="round"/>
-      <path d="M508 95 Q518 88 528 95"  stroke="#2C2318" stroke-width="1.4" stroke-linecap="round"/>
-      <path d="M406 100 Q414 94 422 100" stroke="#2C2318" stroke-width="1.2" stroke-linecap="round"/>
-      <path d="M530 72 Q538 66 546 72"  stroke="#2C2318" stroke-width="1.2" stroke-linecap="round"/>
+      <!-- Mid mountain ridge — clean ink line -->
+      <path d="M0 374 Q48 296 106 332 Q152 294 198 314 Q244 280 292 306 Q338 278 384 302 Q420 282 462 298 Q508 274 554 294 Q578 282 600 290 L600 700 L0 700 Z"
+            fill="#A89468" opacity="0.25"/>
+      <path d="M0 374 Q48 296 106 332 Q152 294 198 314 Q244 280 292 306 Q338 278 384 302 Q420 282 462 298 Q508 274 554 294 Q578 282 600 290"
+            stroke="#1A1208" stroke-width="1.3" fill="none" opacity="0.48" stroke-linecap="round"/>
 
-      <!-- ══════════════════════════════════════════════
-           PAVILION / HOUSE — centre background
-           ══════════════════════════════════════════════ -->
-      <g transform="translate(290, 200)">
+      <!-- Near mountain left — bolder, ink wash  -->
+      <path d="M-10 425 Q28 332 88 362 Q124 326 168 348 Q198 322 240 342 L240 700 L-10 700 Z"
+            fill="#9C8858" opacity="0.32"/>
+      <path d="M-10 425 Q28 332 88 362 Q124 326 168 348 Q198 322 240 342"
+            stroke="#1A1208" stroke-width="2.2" fill="none" opacity="0.58" stroke-linecap="round"/>
+      <!-- Mountain shadow strokes -->
+      <path d="M58 348 Q65 362 62 380"  stroke="#1A1208" stroke-width="0.7" fill="none" opacity="0.22" stroke-linecap="round"/>
+      <path d="M100 334 Q106 348 103 366" stroke="#1A1208" stroke-width="0.7" fill="none" opacity="0.2" stroke-linecap="round"/>
+      <path d="M142 330 Q146 342 144 358" stroke="#1A1208" stroke-width="0.6" fill="none" opacity="0.18" stroke-linecap="round"/>
 
-        <!-- Finial spire -->
-        <line x1="0" y1="-68" x2="0" y2="-45" stroke="#2C2318" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="0" cy="-73" r="6" fill="#C03020" opacity="0.8"/>
+      <!-- ══════════════════════════════════════════════════
+           WINDING RIVER — S-curve, Sumi-e style
+           ══════════════════════════════════════════════════ -->
 
-        <!-- Upper roof tier — curved eaves -->
-        <path d="M-38 -45 Q-52 -52 -62 -38 L-46 -24 Q0 -42 46 -24 L62 -38 Q52 -52 38 -45 Q0 -58 -38 -45 Z"
-              fill="#2C2318" opacity="0.85"/>
-        <!-- Eave tips (vermilion detail) -->
-        <circle cx="-62" cy="-38" r="3" fill="#C03020" opacity="0.7"/>
-        <circle cx=" 62" cy="-38" r="3" fill="#C03020" opacity="0.7"/>
+      <!-- River fill -->
+      <path d="M185 345 Q218 362 238 384 Q258 404 244 435 Q230 465 252 495 Q274 524 260 556 Q248 582 266 625 L266 700 L196 700 L180 625 Q162 580 176 552 Q190 522 168 492 Q146 462 162 430 Q178 400 160 380 Q144 360 158 342 Z"
+            fill="#9CB8C4" opacity="0.42"/>
 
-        <!-- Upper roof body -->
-        <path d="M-46 -24 Q0 -36 46 -24 L38 -8 L-38 -8 Z"
-              fill="#2C2318" opacity="0.78"/>
+      <!-- River banks — ink strokes -->
+      <path d="M164 340 Q150 362 162 392 Q174 420 154 454 Q134 488 158 522 Q182 554 164 590 Q150 622 160 665"
+            stroke="#1A1208" stroke-width="1.4" fill="none" opacity="0.48" stroke-linecap="round"/>
+      <path d="M238 344 Q252 364 240 394 Q228 422 246 456 Q264 490 250 524 Q236 556 254 592 Q268 624 262 668"
+            stroke="#1A1208" stroke-width="1.2" fill="none" opacity="0.4" stroke-linecap="round"/>
 
-        <!-- Lower roof tier — wider curved eaves -->
-        <path d="M-60 -8 Q-78 -15 -92 0 L-72 16 Q0 -2 72 16 L92 0 Q78 -15 60 -8 Q0 -22 -60 -8 Z"
-              fill="#2C2318" opacity="0.72"/>
-        <!-- Eave tips -->
-        <circle cx="-92" cy="0" r="3.5" fill="#C03020" opacity="0.65"/>
-        <circle cx=" 92" cy="0" r="3.5" fill="#C03020" opacity="0.65"/>
+      <!-- River ripples -->
+      <path d="M174 400 Q188 395 202 400" stroke="#1A1208" stroke-width="0.8" fill="none" opacity="0.28" stroke-linecap="round"/>
+      <path d="M160 438 Q175 432 190 438" stroke="#1A1208" stroke-width="0.7" fill="none" opacity="0.24" stroke-linecap="round"/>
+      <path d="M182 474 Q197 468 212 474" stroke="#1A1208" stroke-width="0.7" fill="none" opacity="0.22" stroke-linecap="round"/>
+      <path d="M168 510 Q184 505 198 510" stroke="#1A1208" stroke-width="0.6" fill="none" opacity="0.18" stroke-linecap="round"/>
 
-        <!-- Lower roof body -->
-        <path d="M-72 16 Q0 2 72 16 L60 34 L-60 34 Z"
-              fill="#2C2318" opacity="0.66"/>
+      <!-- Small boat -->
+      <path d="M172 518 Q190 510 208 518" stroke="#1A1208" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.55"/>
+      <line x1="190" y1="510" x2="190" y2="492" stroke="#1A1208" stroke-width="1.3" opacity="0.48"/>
+      <path d="M184 492 Q190 484 196 492" stroke="#1A1208" stroke-width="1" fill="none" opacity="0.43"/>
+      <circle cx="178" cy="511" r="3.5" fill="#1A1208" opacity="0.45"/>
 
-        <!-- Facade wall -->
-        <rect x="-60" y="34" width="120" height="72" fill="#2C2318" opacity="0.14"/>
+      <!-- Ground / near bank -->
+      <path d="M0 582 Q80 565 162 575 Q242 562 322 576 Q402 564 482 574 Q542 566 600 572 L600 700 L0 700 Z"
+            fill="#988454" opacity="0.36"/>
+      <path d="M0 582 Q80 565 162 575 Q242 562 322 576 Q402 564 482 574 Q542 566 600 572"
+            stroke="#1A1208" stroke-width="1.6" fill="none" opacity="0.44" stroke-linecap="round"/>
 
-        <!-- Pillars -->
-        <rect x="-52" y="34" width="7" height="72" fill="#2C2318" opacity="0.6"/>
-        <rect x="-18" y="34" width="7" height="72" fill="#2C2318" opacity="0.6"/>
-        <rect x=" 11" y="34" width="7" height="72" fill="#2C2318" opacity="0.6"/>
-        <rect x=" 45" y="34" width="7" height="72" fill="#2C2318" opacity="0.6"/>
+      <!-- Grass tufts -->
+      <path d="M294 576 Q298 562 304 574 Q308 560 314 572" stroke="#1A1208" stroke-width="1.3" fill="none" stroke-linecap="round" opacity="0.42"/>
+      <path d="M68  578 Q72  565 77  576 Q81  562 86  574"  stroke="#1A1208" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.36"/>
+      <path d="M522 572 Q526 558 531 570 Q535 556 540 568" stroke="#1A1208" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.33"/>
 
-        <!-- Central doorway arch -->
-        <path d="M-12 106 L-12 62 Q0 52 12 62 L12 106 Z" fill="#EDE5D8" opacity="0.55"/>
-        <path d="M-12 62 Q0 50 12 62" stroke="#2C2318" stroke-width="1" fill="none" opacity="0.6"/>
+      <!-- ══════════════════════════════════════════════════
+           CHERRY BLOSSOM TREE — right side, bold Sumi-e
+           ══════════════════════════════════════════════════ -->
+      <g transform="translate(468, 345)">
 
-        <!-- Side windows (moon windows) -->
-        <circle cx="-32" cy="66" r="10" fill="#EDE5D8" opacity="0.4" stroke="#2C2318" stroke-width="0.8"/>
-        <circle cx=" 32" cy="66" r="10" fill="#EDE5D8" opacity="0.4" stroke="#2C2318" stroke-width="0.8"/>
+        <!-- Root spurs -->
+        <path d="M-6 234 Q-22 214 -15 198" stroke="#1A1208" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.68"/>
+        <path d="M10 236 Q26  216 18  200" stroke="#1A1208" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.62"/>
 
-        <!-- Hanging lanterns -->
-        <g opacity="0.7">
-          <!-- Left lantern -->
-          <line x1="-34" y1="16" x2="-34" y2="24" stroke="#2C2318" stroke-width="1"/>
-          <ellipse cx="-34" cy="30" rx="5" ry="8" fill="#C03020" opacity="0.8"/>
-          <line x1="-34" y1="38" x2="-34" y2="42" stroke="#C03020" stroke-width="0.8"/>
-          <!-- Right lantern -->
-          <line x1="34" y1="16" x2="34" y2="24" stroke="#2C2318" stroke-width="1"/>
-          <ellipse cx="34" cy="30" rx="5" ry="8" fill="#C03020" opacity="0.8"/>
-          <line x1="34" y1="38" x2="34" y2="42" stroke="#C03020" stroke-width="0.8"/>
-        </g>
+        <!-- Main trunk — bold brush, tapers up -->
+        <path d="M0 232 Q-9 182 -5 140 Q-13 88 -2 44 Q7 12 3 -18"
+              stroke="#1A1208" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.88"/>
+        <!-- Trunk details -->
+        <path d="M-4 152 Q5 140 -2 128"  stroke="#1A1208" stroke-width="1.5" fill="none" opacity="0.28" stroke-linecap="round"/>
 
-        <!-- Base platform -->
-        <rect x="-68" y="106" width="136" height="10" rx="1" fill="#2C2318" opacity="0.6"/>
-        <rect x="-78" y="116" width="156" height="6" rx="1" fill="#2C2318" opacity="0.45"/>
-
-        <!-- Front steps -->
-        <rect x="-12" y="122" width="24" height="5" rx="1" fill="#2C2318" opacity="0.4"/>
-        <rect x="-8"  y="127" width="16" height="4" rx="1" fill="#2C2318" opacity="0.3"/>
-      </g>
-
-      <!-- ══════════════════════════════════════════════
-           CHERRY BLOSSOM TREE — right side
-           ══════════════════════════════════════════════ -->
-      <g transform="translate(490, 360)">
-
-        <!-- Root base -->
-        <path d="M-12 218 Q-20 200 -8 185" stroke="#2C2318" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.7"/>
-        <path d="M8 220 Q18 202 10 186"   stroke="#2C2318" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.6"/>
-
-        <!-- Main trunk — ink brush character, slight lean left -->
-        <path d="M0 215 Q-6 170 -4 130 Q-10 80 0 40 Q6 10 2 -20"
-              stroke="#2C2318" stroke-width="6" stroke-linecap="round" fill="none"/>
-
-        <!-- Trunk texture / split -->
-        <path d="M-2 160 Q4 145 0 130" stroke="#2C2318" stroke-width="1.5" fill="none" opacity="0.35" stroke-linecap="round"/>
-        <path d="M-1 100 Q-5 88 0 76"  stroke="#2C2318" stroke-width="1"   fill="none" opacity="0.28" stroke-linecap="round"/>
-
-        <!-- Branches — sweeping ink strokes -->
-        <path d="M0 80 Q-40 50 -75 20"  stroke="#2C2318" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-        <path d="M2 55 Q35 20 70 -10"   stroke="#2C2318" stroke-width="3"   stroke-linecap="round" fill="none"/>
-        <path d="M-1 110 Q-50 90 -85 68" stroke="#2C2318" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-        <path d="M1 40 Q18 5 42 -30"    stroke="#2C2318" stroke-width="2.5" stroke-linecap="round" fill="none"/>
-        <path d="M2 30 Q-15 -5 -28 -35" stroke="#2C2318" stroke-width="2" stroke-linecap="round" fill="none"/>
+        <!-- Branches — calligraphic sweeps -->
+        <path d="M-2 72  Q-44 42  -80 10"   stroke="#1A1208" stroke-width="5.5" stroke-linecap="round" fill="none" opacity="0.82"/>
+        <path d="M2  50  Q38  14  76  -12"   stroke="#1A1208" stroke-width="5"   stroke-linecap="round" fill="none" opacity="0.78"/>
+        <path d="M-2 110 Q-54 90  -90 64"   stroke="#1A1208" stroke-width="4.5" stroke-linecap="round" fill="none" opacity="0.72"/>
+        <path d="M2  38  Q24  4   48  -26"   stroke="#1A1208" stroke-width="4"   stroke-linecap="round" fill="none" opacity="0.7"/>
+        <path d="M-2 30  Q-18 -4  -32 -36"  stroke="#1A1208" stroke-width="3.5" stroke-linecap="round" fill="none" opacity="0.65"/>
 
         <!-- Sub-branches -->
-        <path d="M-75 20 Q-96 2 -102 -18"  stroke="#2C2318" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <path d="M70 -10 Q88 -32 90 -56"   stroke="#2C2318" stroke-width="2" stroke-linecap="round" fill="none"/>
-        <path d="M-85 68 Q-108 50 -112 28" stroke="#2C2318" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-        <path d="M42 -30 Q58 -52 55 -72"   stroke="#2C2318" stroke-width="1.5" stroke-linecap="round" fill="none"/>
-        <path d="M-28 -35 Q-40 -55 -35 -74" stroke="#2C2318" stroke-width="1.3" stroke-linecap="round" fill="none"/>
-        <path d="M-102 -18 Q-112 -38 -108 -56" stroke="#2C2318" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+        <path d="M-80  10  Q-102 -10 -108 -32" stroke="#1A1208" stroke-width="2.8" stroke-linecap="round" fill="none" opacity="0.6"/>
+        <path d="M76  -12  Q95  -34  96  -56"   stroke="#1A1208" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.57"/>
+        <path d="M-90  64  Q-114 46 -118 24"   stroke="#1A1208" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.54"/>
+        <path d="M48  -26  Q64  -48  60  -68"   stroke="#1A1208" stroke-width="2"   stroke-linecap="round" fill="none" opacity="0.52"/>
+        <path d="M-32 -36  Q-46 -56 -42  -74"  stroke="#1A1208" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <path d="M-108 -32 Q-116 -50 -113 -62" stroke="#1A1208" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.42"/>
+        <path d="M96  -56  Q102 -70  100 -82"   stroke="#1A1208" stroke-width="1.3" stroke-linecap="round" fill="none" opacity="0.4"/>
 
         <!-- ── Blossom clusters ── -->
-        <!-- Cluster A — far left-top -->
-        <g opacity="1">
-          <circle cx="-106" cy="-54" r="22" fill="#EED8CA" opacity="0.7"/>
-          <circle cx="-92"  cy="-66" r="17" fill="#E8CEBC" opacity="0.65"/>
-          <circle cx="-120" cy="-62" r="16" fill="#F0DDD0" opacity="0.62"/>
-          <circle cx="-84"  cy="-76" r="13" fill="#EED8CA" opacity="0.58"/>
-          <circle cx="-126" cy="-48" r="12" fill="#E8CEBC" opacity="0.55"/>
-        </g>
-        <!-- Five-petal blossoms on cluster A -->
-        <g transform="translate(-105,-56)" opacity="0.72">
-          <circle cx="0"   cy="-8"  r="4.5" fill="#F4E0D4"/>
-          <circle cx="7.6" cy="-2.5" r="4.5" fill="#F0D8C8"/>
-          <circle cx="4.7" cy="6.5"  r="4.5" fill="#F4E0D4"/>
-          <circle cx="-4.7" cy="6.5" r="4.5" fill="#F0D8C8"/>
-          <circle cx="-7.6" cy="-2.5" r="4.5" fill="#F4E0D4"/>
-          <circle cx="0" cy="0" r="3.5" fill="#C03020" opacity="0.55"/>
-        </g>
-        <g transform="translate(-88,-70)" opacity="0.6">
-          <circle cx="0"   cy="-6"  r="3.5" fill="#F4E0D4"/>
-          <circle cx="5.7" cy="-1.8" r="3.5" fill="#F0D8C8"/>
-          <circle cx="3.5" cy="5"    r="3.5" fill="#F4E0D4"/>
-          <circle cx="-3.5" cy="5"   r="3.5" fill="#F0D8C8"/>
-          <circle cx="-5.7" cy="-1.8" r="3.5" fill="#F4E0D4"/>
-          <circle cx="0" cy="0" r="2.5" fill="#C03020" opacity="0.5"/>
+        <!-- Cluster A — far left -->
+        <circle cx="-110" cy="-55" r="25" fill="#EED8CE" opacity="0.72"/>
+        <circle cx="-97"  cy="-69" r="19" fill="#EAD0C4" opacity="0.68"/>
+        <circle cx="-124" cy="-63" r="18" fill="#F2DEDA" opacity="0.65"/>
+        <circle cx="-90"  cy="-80" r="14" fill="#EED8CE" opacity="0.6"/>
+        <!-- Red accents A -->
+        <circle cx="-110" cy="-59" r="5.5" fill="#C8281E" opacity="0.55"/>
+        <circle cx="-98"  cy="-72" r="4"   fill="#C8281E" opacity="0.5"/>
+        <circle cx="-124" cy="-66" r="4"   fill="#C8281E" opacity="0.48"/>
+        <circle cx="-91"  cy="-83" r="3"   fill="#C8281E" opacity="0.42"/>
+        <!-- Five-petal blossom A -->
+        <g transform="translate(-110,-57)" opacity="0.72">
+          <circle cx="0"    cy="-8"  r="5" fill="#F8E8E2"/>
+          <circle cx="7.6"  cy="-2.5" r="5" fill="#F4E0D8"/>
+          <circle cx="4.7"  cy="6.5"  r="5" fill="#F8E8E2"/>
+          <circle cx="-4.7" cy="6.5"  r="5" fill="#F4E0D8"/>
+          <circle cx="-7.6" cy="-2.5" r="5" fill="#F8E8E2"/>
+          <circle cx="0"    cy="0"    r="4" fill="#C8281E" opacity="0.62"/>
         </g>
 
-        <!-- Cluster B — right-top -->
-        <g opacity="1">
-          <circle cx="88"  cy="-58" r="20" fill="#F0DDD0" opacity="0.7"/>
-          <circle cx="76"  cy="-70" r="16" fill="#ECD5C5" opacity="0.65"/>
-          <circle cx="100" cy="-66" r="15" fill="#E8CDBB" opacity="0.62"/>
-          <circle cx="68"  cy="-80" r="12" fill="#F0DDD0" opacity="0.58"/>
-        </g>
-        <g transform="translate(88,-60)" opacity="0.72">
-          <circle cx="0"   cy="-7"  r="4" fill="#F4E0D4"/>
-          <circle cx="6.7" cy="-2.2" r="4" fill="#F0D8C8"/>
-          <circle cx="4.1" cy="5.7"  r="4" fill="#F4E0D4"/>
-          <circle cx="-4.1" cy="5.7" r="4" fill="#F0D8C8"/>
-          <circle cx="-6.7" cy="-2.2" r="4" fill="#F4E0D4"/>
-          <circle cx="0" cy="0" r="3" fill="#C03020" opacity="0.5"/>
-        </g>
-
-        <!-- Cluster C — lower left branch -->
-        <g opacity="0.9">
-          <circle cx="-110" cy="26" r="18" fill="#EED8CA" opacity="0.65"/>
-          <circle cx="-124" cy="14" r="14" fill="#E8CEBC" opacity="0.6"/>
-          <circle cx="-122" cy="36" r="13" fill="#F0DDD0" opacity="0.58"/>
-        </g>
-        <g transform="translate(-112,24)" opacity="0.65">
-          <circle cx="0"   cy="-6"  r="3.5" fill="#F4E0D4"/>
-          <circle cx="5.7" cy="-1.8" r="3.5" fill="#F0D8C8"/>
-          <circle cx="3.5" cy="5"    r="3.5" fill="#F4E0D4"/>
-          <circle cx="-3.5" cy="5"   r="3.5" fill="#F0D8C8"/>
-          <circle cx="-5.7" cy="-1.8" r="3.5" fill="#F4E0D4"/>
-          <circle cx="0" cy="0" r="2.5" fill="#C03020" opacity="0.45"/>
+        <!-- Cluster B — right -->
+        <circle cx="92"  cy="-58" r="23" fill="#F0DDD4" opacity="0.7"/>
+        <circle cx="80"  cy="-72" r="17" fill="#ECD5C8" opacity="0.66"/>
+        <circle cx="106" cy="-66" r="17" fill="#F4E2D8" opacity="0.63"/>
+        <circle cx="72"  cy="-82" r="13" fill="#EFDACE" opacity="0.58"/>
+        <circle cx="92"  cy="-62" r="5"   fill="#C8281E" opacity="0.52"/>
+        <circle cx="80"  cy="-75" r="4"   fill="#C8281E" opacity="0.48"/>
+        <circle cx="106" cy="-69" r="4"   fill="#C8281E" opacity="0.46"/>
+        <g transform="translate(92,-60)" opacity="0.68">
+          <circle cx="0"    cy="-7"  r="4.5" fill="#F8E8E2"/>
+          <circle cx="6.7"  cy="-2.2" r="4.5" fill="#F4E0D8"/>
+          <circle cx="4.1"  cy="5.8"  r="4.5" fill="#F8E8E2"/>
+          <circle cx="-4.1" cy="5.8"  r="4.5" fill="#F4E0D8"/>
+          <circle cx="-6.7" cy="-2.2" r="4.5" fill="#F8E8E2"/>
+          <circle cx="0"    cy="0"    r="3.5" fill="#C8281E" opacity="0.58"/>
         </g>
 
-        <!-- Loose petals falling from tree -->
-        <ellipse cx="-40" cy="30"  rx="4" ry="6" fill="#ECD5C5" opacity="0.55" transform="rotate(-30 -40 30)"/>
-        <ellipse cx="22"  cy="60"  rx="3.5" ry="5.5" fill="#ECD5C5" opacity="0.48" transform="rotate(20 22 60)"/>
-        <ellipse cx="-20" cy="100" rx="3" ry="5" fill="#ECD5C5" opacity="0.42" transform="rotate(-15 -20 100)"/>
-        <ellipse cx="45"  cy="140" rx="3.5" ry="5" fill="#ECD5C5" opacity="0.38" transform="rotate(35 45 140)"/>
-        <ellipse cx="-60" cy="160" rx="3" ry="4.5" fill="#ECD5C5" opacity="0.35" transform="rotate(-45 -60 160)"/>
+        <!-- Cluster C — lower branch -->
+        <circle cx="-116" cy="25" r="20" fill="#EED8CA" opacity="0.66"/>
+        <circle cx="-130" cy="13" r="15" fill="#EAD0BE" opacity="0.62"/>
+        <circle cx="-128" cy="37" r="14" fill="#F0DDCE" opacity="0.6"/>
+        <circle cx="-116" cy="22"  r="4" fill="#C8281E" opacity="0.47"/>
+        <circle cx="-130" cy="11"  r="3" fill="#C8281E" opacity="0.43"/>
+
+        <!-- Falling petals from tree -->
+        <ellipse cx="-44" cy="30"  rx="5.5" ry="8" fill="#ECD5C4" opacity="0.52" transform="rotate(-34 -44 30)"/>
+        <ellipse cx="30"  cy="58"  rx="5"   ry="7.5" fill="#ECD5C4" opacity="0.46" transform="rotate(24 30 58)"/>
+        <ellipse cx="-20" cy="98"  rx="4.5" ry="7" fill="#ECD5C4" opacity="0.4" transform="rotate(-20 -20 98)"/>
+        <ellipse cx="52"  cy="142" rx="5"   ry="6.5" fill="#ECD5C4" opacity="0.36" transform="rotate(40 52 142)"/>
       </g>
 
-      <!-- ══════════════════════════════════════════════
-           SCHOLAR — centre-left, holding open scroll
-           ══════════════════════════════════════════════ -->
-      <g transform="translate(168, 368)">
+      <!-- Scattered petals across scene -->
+      <ellipse cx="60"  cy="208" rx="5.5" ry="8"   fill="#ECD5C4" opacity="0.46" transform="rotate(-30 60 208)"/>
+      <ellipse cx="316" cy="272" rx="5"   ry="7"   fill="#ECD5C4" opacity="0.4"  transform="rotate(16 316 272)"/>
+      <ellipse cx="258" cy="448" rx="4.5" ry="6.5" fill="#ECD5C4" opacity="0.36" transform="rotate(-42 258 448)"/>
+      <ellipse cx="378" cy="204" rx="5.5" ry="7.5" fill="#ECD5C4" opacity="0.42" transform="rotate(22 378 204)"/>
 
-        <!-- Shadow under figure -->
-        <ellipse cx="0" cy="218" rx="30" ry="6" fill="#2C2318" opacity="0.12"/>
+      <!-- ══════════════════════════════════════════════════
+           SAMURAI — caricature in thick marker/brush style
+           Sitting at base of tree, facing left, reading scroll
+           ══════════════════════════════════════════════════ -->
+      <g transform="translate(398, 486)" filter="url(#roughen)">
 
-        <!-- ── Robe body ── -->
-        <!-- Main robe — flowing, slightly billowing -->
-        <path d="M-4 42 Q-28 90 -34 150 Q-38 190 -30 216"
-              stroke="#2C2318" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.75"/>
-        <path d="M4 42 Q28 90 32 150 Q36 190 28 216"
-              stroke="#2C2318" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.75"/>
+        <!-- ── Seated legs — cross-legged, chunky shapes ── -->
+        <!-- Right leg (far) -->
+        <path d="M-8 84 Q-38 92 -58 80 Q-70 70 -60 56 Q-48 44 -22 52 Q-6 58 -4 70 Z"
+              fill="#1A1208" opacity="0.84"/>
+        <path d="M-8 84 Q-38 92 -58 80 Q-70 70 -60 56 Q-48 44 -22 52 Q-6 58 -4 70 Z"
+              fill="none" stroke="#1A1208" stroke-width="2.5" stroke-linejoin="round"/>
+        <!-- Left leg (near) -->
+        <path d="M8 84 Q38 92 58 80 Q70 70 60 56 Q48 44 22 52 Q6 58 4 70 Z"
+              fill="#1A1208" opacity="0.84"/>
+        <path d="M8 84 Q38 92 58 80 Q70 70 60 56 Q48 44 22 52 Q6 58 4 70 Z"
+              fill="none" stroke="#1A1208" stroke-width="2.5" stroke-linejoin="round"/>
+        <!-- Lap area fill -->
+        <ellipse cx="0" cy="72" rx="46" ry="14" fill="#1A1208" opacity="0.15"/>
 
-        <!-- Robe fill — wide sleeves -->
-        <path d="M-4 42 Q-28 90 -34 150 Q-38 190 -30 216 L28 216 Q36 190 32 150 Q28 90 4 42 Z"
-              fill="#2C2318" opacity="0.1"/>
+        <!-- ── Kimono body — wide, boxy silhouette ── -->
+        <path d="M-24 50 Q-40 22 -32 4 Q-24 -12 0 -14 Q24 -12 32 4 Q40 22 24 50 Q14 62 0 64 Q-14 62 -24 50 Z"
+              fill="#1A1208" opacity="0.86"/>
+        <path d="M-24 50 Q-40 22 -32 4 Q-24 -12 0 -14 Q24 -12 32 4 Q40 22 24 50 Q14 62 0 64 Q-14 62 -24 50 Z"
+              fill="none" stroke="#1A1208" stroke-width="3" stroke-linejoin="round"/>
 
-        <!-- Left wide sleeve — extends left toward scroll -->
-        <path d="M-12 62 Q-55 55 -95 58 Q-100 58 -102 62"
-              stroke="#2C2318" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.72"/>
-        <path d="M-12 68 Q-55 65 -100 68"
-              stroke="#2C2318" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.3"/>
+        <!-- Collar V-line -->
+        <path d="M-7 -12 Q0 -4 7 -12" stroke="#F0E8D4" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.7"/>
+        <path d="M-6 -2 Q0 4 6 -2"    stroke="#F0E8D4" stroke-width="1.8" fill="none" stroke-linecap="round" opacity="0.55"/>
 
-        <!-- Right wide sleeve — extends right toward scroll -->
-        <path d="M12 62 Q55 55 95 58 Q100 58 102 62"
-              stroke="#2C2318" stroke-width="10" stroke-linecap="round" fill="none" opacity="0.72"/>
-        <path d="M12 68 Q55 65 100 68"
-              stroke="#2C2318" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.3"/>
+        <!-- Obi belt — bold white stripe -->
+        <path d="M-26 28 Q0 24 26 28" stroke="#F0E8D4" stroke-width="4.5" fill="none" stroke-linecap="round" opacity="0.68"/>
+        <path d="M-24 36 Q0 32 24 36" stroke="#F0E8D4" stroke-width="2.2" fill="none" stroke-linecap="round" opacity="0.45"/>
 
-        <!-- Sash / belt -->
-        <path d="M-20 110 Q0 105 20 110" stroke="#9B8B5E" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
-        <path d="M-18 118 Q0 114 18 118" stroke="#9B8B5E" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
-
-        <!-- Robe folds / fabric lines -->
-        <path d="M-8 120 Q-10 160 -14 200" stroke="#2C2318" stroke-width="1" fill="none" opacity="0.2" stroke-linecap="round"/>
-        <path d="M8 122 Q10 162 14 202"   stroke="#2C2318" stroke-width="1" fill="none" opacity="0.2" stroke-linecap="round"/>
-
-        <!-- Feet — shoes peeking from robe -->
-        <ellipse cx="-14" cy="216" rx="12" ry="5" fill="#2C2318" opacity="0.55"/>
-        <ellipse cx=" 14" cy="218" rx="12" ry="5" fill="#2C2318" opacity="0.45"/>
+        <!-- Fabric fold lines on robe -->
+        <path d="M-10 18 Q-14 40 -16 58" stroke="#F0E8D4" stroke-width="1" fill="none" opacity="0.2" stroke-linecap="round"/>
+        <path d="M10 18 Q14 40 16 58"    stroke="#F0E8D4" stroke-width="1" fill="none" opacity="0.2" stroke-linecap="round"/>
 
         <!-- ── Neck ── -->
-        <line x1="0" y1="14" x2="0" y2="26" stroke="#2C2318" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+        <rect x="-6" y="-21" width="12" height="11" rx="5" fill="#C8A878" opacity="0.9"/>
 
-        <!-- ── Head ── -->
-        <circle cx="0" cy="4" r="18" fill="#2C2318" opacity="0.82"/>
-        <!-- Hair top-knot / scholar hat -->
-        <path d="M-14 -10 Q-18 -24 -8 -30 Q0 -36 8 -30 Q18 -24 14 -10"
-              fill="#2C2318" opacity="0.9"/>
-        <!-- Hat pin horizontal brim -->
-        <rect x="-22" y="-12" width="44" height="4" rx="2" fill="#2C2318" opacity="0.85"/>
-        <!-- Face — ink dots for eyes -->
-        <circle cx="-6" cy="6" r="2" fill="#F4EFE6" opacity="0.8"/>
-        <circle cx=" 6" cy="6" r="2" fill="#F4EFE6" opacity="0.8"/>
-        <!-- Subtle smile -->
-        <path d="M-5 14 Q0 18 5 14" stroke="#F4EFE6" stroke-width="1.2" fill="none" opacity="0.5" stroke-linecap="round"/>
+        <!-- ══════════════════════════════
+             BIG CARICATURE HEAD
+             Round, expressive, marker weight
+             ══════════════════════════════ -->
 
-        <!-- Left hand (at end of left sleeve) -->
-        <circle cx="-100" cy="62" r="6" fill="#2C2318" opacity="0.65"/>
-        <!-- Right hand (at end of right sleeve) -->
-        <circle cx="100" cy="62" r="6" fill="#2C2318" opacity="0.65"/>
+        <!-- Head shape — large oval, cream skin -->
+        <ellipse cx="0" cy="-48" rx="30" ry="28" fill="#C8A878" opacity="0.95"/>
+        <!-- Thick marker outline -->
+        <ellipse cx="0" cy="-48" rx="30" ry="28" fill="none" stroke="#1A1208" stroke-width="3.5"/>
+
+        <!-- ── Samurai hair — chonmage topknot ── -->
+        <!-- Shaved area / dark hair band above ears -->
+        <path d="M-30 -54 Q-28 -76 -12 -76 Q0 -78 12 -76 Q28 -76 30 -54"
+              fill="#1A1208" opacity="0.9" stroke="#1A1208" stroke-width="1"/>
+        <!-- Topknot bun — chunky rounded rectangle -->
+        <ellipse cx="0" cy="-78" rx="12" ry="8" fill="#1A1208" opacity="0.92"/>
+        <path d="M-10 -78 Q0 -83 10 -78" stroke="#3A2818" stroke-width="1.2" fill="none" opacity="0.4"/>
+
+        <!-- ── Caricature face — facing left (slightly) ── -->
+        <!-- BIG circular eyes — marker blobs -->
+        <circle cx="-8"  cy="-50" r="6.5" fill="#1A1208" opacity="0.92"/>
+        <circle cx=" 10" cy="-50" r="6"   fill="#1A1208" opacity="0.88"/>
+        <!-- Eye shine — marker style white dot -->
+        <circle cx="-6.5" cy="-51.5" r="2.2" fill="#F0E8D4" opacity="0.95"/>
+        <circle cx="11.5" cy="-51.5" r="2"   fill="#F0E8D4" opacity="0.92"/>
+
+        <!-- Tiny dot nose -->
+        <circle cx="1" cy="-40" r="3.2" fill="#A07848" opacity="0.6"/>
+
+        <!-- Big happy curved mouth — reading with delight -->
+        <path d="M-10 -32 Q0 -22 10 -32" stroke="#1A1208" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.88"/>
+        <!-- Lower lip suggestion -->
+        <path d="M-6 -28 Q0 -24 6 -28"   stroke="#1A1208" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.35"/>
+
+        <!-- Rosy cheeks — ink circles, caricature feel -->
+        <circle cx="-18" cy="-38" r="7" fill="#C86848" opacity="0.2"/>
+        <circle cx=" 18" cy="-38" r="7" fill="#C86848" opacity="0.2"/>
+
+        <!-- Concentration eyebrows — thick, angled inward -->
+        <path d="M-16 -60 Q-10 -64 -3  -60" stroke="#1A1208" stroke-width="3"   fill="none" stroke-linecap="round" opacity="0.82"/>
+        <path d="M  3 -60 Q  9 -64  16 -60" stroke="#1A1208" stroke-width="2.8" fill="none" stroke-linecap="round" opacity="0.82"/>
+
+        <!-- Ear (left, visible) -->
+        <path d="M-30 -50 Q-38 -50 -38 -42 Q-38 -34 -30 -38" stroke="#1A1208" stroke-width="2.5" fill="#C8A878" stroke-linecap="round" opacity="0.7"/>
+
+        <!-- ── Arms — thick marker sleeves, extending to hold scroll ── -->
+        <!-- LEFT arm — extends left -->
+        <path d="M-26 10 Q-55 16 -84 20"
+              stroke="#1A1208" stroke-width="11" stroke-linecap="round" fill="none" opacity="0.85"/>
+        <!-- Left sleeve cuff -->
+        <ellipse cx="-83" cy="20" rx="11" ry="8" fill="#1A1208" opacity="0.8" transform="rotate(-7 -83 20)"/>
+
+        <!-- RIGHT arm — extends right -->
+        <path d="M26 10 Q55 16 84 20"
+              stroke="#1A1208" stroke-width="11" stroke-linecap="round" fill="none" opacity="0.85"/>
+        <!-- Right sleeve cuff -->
+        <ellipse cx="83" cy="20" rx="11" ry="8" fill="#1A1208" opacity="0.8" transform="rotate(7 83 20)"/>
 
         <!-- ══════════════════════════════════════════
-             OPEN SCROLL held by scholar
-             Horizontal scroll unfurled between hands
+             OPEN SCROLL — held between both hands
+             Horizontal, unfurled, showing text
              ══════════════════════════════════════════ -->
 
-        <!-- Scroll paper — main surface -->
-        <rect x="-96" y="70" width="192" height="68" rx="2" fill="#F7F2E8" opacity="0.96"/>
-        <!-- Paper shadow top -->
-        <rect x="-96" y="70" width="192" height="5" rx="2" fill="#D4C9B5" opacity="0.35"/>
+        <!-- Scroll main paper -->
+        <rect x="-80" y="27" width="160" height="56" rx="3" fill="#F5F0E4" opacity="0.97"/>
+        <!-- Paper top shadow -->
+        <rect x="-80" y="27" width="160" height="5" rx="2" fill="#D4C8A8" opacity="0.4"/>
 
         <!-- Left roller -->
-        <rect x="-102" y="68" width="12" height="72" rx="6" fill="#5C4F40" opacity="0.9"/>
-        <ellipse cx="-96" cy="68"  rx="8" ry="5" fill="#2C2318" opacity="0.8"/>
-        <ellipse cx="-96" cy="140" rx="8" ry="5" fill="#2C2318" opacity="0.8"/>
-        <rect x="-100" y="68" width="8" height="72" rx="4" fill="#8A7D6E" opacity="0.3"/>
+        <rect x="-92" y="25" width="14" height="60" rx="7" fill="#5C4030" opacity="0.92"/>
+        <ellipse cx="-85" cy="25" rx="10" ry="6" fill="#2C1808" opacity="0.88"/>
+        <ellipse cx="-85" cy="85" rx="10" ry="6" fill="#2C1808" opacity="0.88"/>
+        <rect x="-90" y="25" width="8" height="60" rx="4" fill="#7A5840" opacity="0.3"/>
 
         <!-- Right roller -->
-        <rect x=" 90" y="68" width="12" height="72" rx="6" fill="#5C4F40" opacity="0.9"/>
-        <ellipse cx="96" cy="68"  rx="8" ry="5" fill="#2C2318" opacity="0.8"/>
-        <ellipse cx="96" cy="140" rx="8" ry="5" fill="#2C2318" opacity="0.8"/>
-        <rect x="92" y="68" width="8" height="72" rx="4" fill="#8A7D6E" opacity="0.3"/>
+        <rect x="78" y="25" width="14" height="60" rx="7" fill="#5C4030" opacity="0.92"/>
+        <ellipse cx="85" cy="25" rx="10" ry="6" fill="#2C1808" opacity="0.88"/>
+        <ellipse cx="85" cy="85" rx="10" ry="6" fill="#2C1808" opacity="0.88"/>
+        <rect x="82" y="25" width="8" height="60" rx="4" fill="#7A5840" opacity="0.3"/>
 
-        <!-- Scroll border rule -->
-        <rect x="-90" y="75" width="180" height="58" fill="none" stroke="#9B8B5E" stroke-width="0.8" opacity="0.5"/>
-        <rect x="-87" y="78" width="174" height="52" fill="none" stroke="#9B8B5E" stroke-width="0.4" opacity="0.3"/>
+        <!-- Scroll border rule (gold) -->
+        <rect x="-74" y="33" width="148" height="40" fill="none" stroke="#9B8B5E" stroke-width="0.8" opacity="0.55"/>
 
-        <!-- Scroll content — manuscript text lines -->
-        <g opacity="0.3" transform="translate(-82, 84)">
-          <rect x="0" y="0"  width="164" height="2.5" rx="1" fill="#2C2318"/>
-          <rect x="0" y="8"  width="158" height="2.5" rx="1" fill="#2C2318"/>
-          <rect x="0" y="16" width="162" height="2.5" rx="1" fill="#2C2318"/>
-          <rect x="0" y="24" width="148" height="2.5" rx="1" fill="#2C2318"/>
-          <rect x="0" y="32" width="160" height="2.5" rx="1" fill="#2C2318"/>
-          <rect x="0" y="40" width="140" height="2.5" rx="1" fill="#2C2318"/>
+        <!-- Scroll text lines — manuscript marks -->
+        <g opacity="0.26" transform="translate(-67, 40)">
+          <rect x="0" y="0"  width="134" height="2.2" rx="1" fill="#1A1208"/>
+          <rect x="0" y="8"  width="128" height="2.2" rx="1" fill="#1A1208"/>
+          <rect x="0" y="16" width="132" height="2.2" rx="1" fill="#1A1208"/>
+          <rect x="0" y="24" width="118" height="2.2" rx="1" fill="#1A1208"/>
         </g>
 
-        <!-- Scroll title — small bold block center-top of scroll -->
-        <rect x="-30" y="80" width="60" height="4" rx="2" fill="#2C2318" opacity="0.45"/>
+        <!-- Red citation dots on scroll -->
+        <circle cx="-64" cy="43"  r="3" fill="#C8281E" opacity="0.6"/>
+        <circle cx="-64" cy="51"  r="3" fill="#C8281E" opacity="0.58"/>
+        <circle cx="-64" cy="59"  r="3" fill="#C8281E" opacity="0.52"/>
 
-        <!-- Vermilion citation dots -->
-        <circle cx="-75" cy="88"  r="2.5" fill="#C03020" opacity="0.6"/>
-        <circle cx="-75" cy="100" r="2.5" fill="#C03020" opacity="0.6"/>
-        <circle cx="-75" cy="112" r="2.5" fill="#C03020" opacity="0.55"/>
-
-        <!-- Small seal on scroll — bottom right corner -->
-        <g transform="translate(58, 110)" opacity="0.6">
-          <rect x="0" y="0" width="20" height="20" fill="#C03020" opacity="0.15"/>
-          <rect x="0" y="0" width="20" height="20" fill="none" stroke="#C03020" stroke-width="1.2"/>
-          <text x="2.5" y="12" font-size="9" fill="#C03020" font-family="Georgia, serif">引</text>
-          <text x="10.5" y="12" font-size="9" fill="#C03020" font-family="Georgia, serif">用</text>
+        <!-- Small 引 seal on scroll -->
+        <g transform="translate(44, 48)" opacity="0.65">
+          <rect x="0" y="0" width="16" height="16" fill="none" stroke="#C8281E" stroke-width="1.2"/>
+          <text x="1.5" y="13" font-size="10" fill="#C8281E" font-family="Georgia,serif">引</text>
         </g>
 
-        <!-- Slight page curl on left edge of scroll -->
-        <path d="M-96 130 Q-100 136 -96 140" stroke="#BFB090" stroke-width="0.8" fill="none" opacity="0.5"/>
+        <!-- Page curl on left edge -->
+        <path d="M-80 78 Q-85 83 -80 85" stroke="#C8B890" stroke-width="0.8" fill="none" opacity="0.5"/>
+
+        <!-- ── Sword hilt at hip — just a hint ── -->
+        <path d="M30 54 Q40 42 50 36" stroke="#1A1208" stroke-width="5" stroke-linecap="round" fill="none" opacity="0.5"/>
+        <ellipse cx="30" cy="56" rx="5.5" ry="3.5" fill="#1A1208" opacity="0.58" transform="rotate(-30 30 56)"/>
 
       </g>
 
-      <!-- ══════════════════════════════════════════════
-           GROUND DETAILS
-           ══════════════════════════════════════════════ -->
-
-      <!-- Stone path / ground plane -->
-      <path d="M60 610 Q200 596 340 604 Q460 614 560 600" stroke="#2C2318" stroke-width="0.8" fill="none" opacity="0.2"/>
-      <path d="M40 626 Q180 612 320 618 Q460 628 580 614" stroke="#2C2318" stroke-width="0.6" fill="none" opacity="0.15"/>
-
-      <!-- Ground grass tufts -->
-      <path d="M82  610 Q88  592 96  608 Q102 590 110 606" stroke="#2C2318" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.4"/>
-      <path d="M240 612 Q246 594 254 610 Q260 592 268 608" stroke="#2C2318" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.35"/>
-      <path d="M410 614 Q418 597 424 612 Q430 594 438 610" stroke="#2C2318" stroke-width="1.2" fill="none" stroke-linecap="round" opacity="0.38"/>
-      <path d="M520 606 Q526 590 532 605"                  stroke="#2C2318" stroke-width="1"   fill="none" stroke-linecap="round" opacity="0.3"/>
-
-      <!-- Water / stream at base — subtle ripples -->
-      <path d="M0 648 Q150 632 300 642 Q450 654 600 636 L600 700 L0 700 Z" fill="#BFB090" opacity="0.28"/>
-      <path d="M20 660 Q190 646 360 654 Q490 662 590 648" stroke="#2C2318" stroke-width="0.8" fill="none" opacity="0.2"/>
-      <path d="M0 670 Q180 658 350 664 Q490 672 600 658"  stroke="#2C2318" stroke-width="0.6" fill="none" opacity="0.14"/>
-
-      <!-- Small boat on water -->
-      <path d="M110 652 Q132 644 154 652" stroke="#2C2318" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.55"/>
-      <line x1="132" y1="644" x2="132" y2="622" stroke="#2C2318" stroke-width="1.4" opacity="0.5"/>
-      <path d="M126 622 Q132 614 138 622" stroke="#2C2318" stroke-width="1" fill="none" opacity="0.45"/>
-      <!-- Boatman -->
-      <circle cx="118" cy="645" r="3.5" fill="#2C2318" opacity="0.5"/>
-      <path d="M118 648 Q116 655 118 658" stroke="#2C2318" stroke-width="1.2" fill="none" opacity="0.4"/>
-
-      <!-- ══════════════════════════════════════════════
-           FLOATING PETALS — scattered scene-wide
-           ══════════════════════════════════════════════ -->
-
-      <!-- Petal 1 -->
-      <g transform="translate(58, 198) rotate(-30)">
-        <ellipse cx="0" cy="0" rx="7" ry="4.5" fill="#ECD5C5" opacity="0.62"/>
-        <ellipse cx="0" cy="0" rx="2" ry="1.5" fill="#C03020" opacity="0.35"/>
-      </g>
-      <!-- Petal 2 -->
-      <g transform="translate(88, 310) rotate(18)">
-        <ellipse cx="0" cy="0" rx="6" ry="4" fill="#ECD5C5" opacity="0.55"/>
-        <ellipse cx="0" cy="0" rx="1.5" ry="1" fill="#C03020" opacity="0.3"/>
-      </g>
-      <!-- Petal 3 -->
-      <g transform="translate(140, 450) rotate(-48)">
-        <ellipse cx="0" cy="0" rx="5.5" ry="3.5" fill="#ECD5C5" opacity="0.5"/>
-      </g>
-      <!-- Petal 4 — five petal blossom -->
-      <g transform="translate(54, 430)" opacity="0.42">
-        <circle cx="0"   cy="-8"  r="5" fill="#ECD5C5"/>
-        <circle cx="7.6" cy="-2.5" r="5" fill="#ECD5C5"/>
-        <circle cx="4.7" cy="6.5"  r="5" fill="#ECD5C5"/>
-        <circle cx="-4.7" cy="6.5" r="5" fill="#ECD5C5"/>
-        <circle cx="-7.6" cy="-2.5" r="5" fill="#ECD5C5"/>
-        <circle cx="0" cy="0" r="3.5" fill="#C03020" opacity="0.55"/>
-      </g>
-      <!-- Petal 5 -->
-      <g transform="translate(230, 220) rotate(55)">
-        <ellipse cx="0" cy="0" rx="6" ry="3.5" fill="#ECD5C5" opacity="0.48"/>
-        <ellipse cx="0" cy="0" rx="1.5" ry="1" fill="#C03020" opacity="0.28"/>
-      </g>
-      <!-- Petal 6 -->
-      <g transform="translate(370, 160) rotate(-12)">
-        <ellipse cx="0" cy="0" rx="7" ry="4" fill="#E8CDBB" opacity="0.45"/>
-      </g>
-      <!-- Petal 7 — five petal blossom -->
-      <g transform="translate(200, 550)" opacity="0.35">
-        <circle cx="0"   cy="-6"  r="4" fill="#ECD5C5"/>
-        <circle cx="5.7" cy="-1.8" r="4" fill="#ECD5C5"/>
-        <circle cx="3.5" cy="5"    r="4" fill="#ECD5C5"/>
-        <circle cx="-3.5" cy="5"   r="4" fill="#ECD5C5"/>
-        <circle cx="-5.7" cy="-1.8" r="4" fill="#ECD5C5"/>
-        <circle cx="0" cy="0" r="3" fill="#C03020" opacity="0.5"/>
-      </g>
-      <!-- Petal 8 -->
-      <g transform="translate(42, 540) rotate(40)">
-        <ellipse cx="0" cy="0" rx="5" ry="3" fill="#ECD5C5" opacity="0.4"/>
-      </g>
-      <!-- Petal 9 -->
-      <g transform="translate(310, 490) rotate(-22)">
-        <ellipse cx="0" cy="0" rx="6" ry="4" fill="#ECD5C5" opacity="0.38"/>
-        <ellipse cx="0" cy="0" rx="1.5" ry="1" fill="#C03020" opacity="0.22"/>
-      </g>
-
-      <!-- ══════════════════════════════════════════════
+      <!-- ══════════════════════════════════════════════════
            DECORATIVE FRAME — corner brackets
-           ══════════════════════════════════════════════ -->
-      <path d="M24 24 L24 72 M24 24 L72 24"    stroke="#9B8B5E" stroke-width="1.8" opacity="0.45" stroke-linecap="round"/>
-      <path d="M576 24 L576 72 M576 24 L528 24" stroke="#9B8B5E" stroke-width="1.8" opacity="0.45" stroke-linecap="round"/>
-      <path d="M24 676 L24 628 M24 676 L72 676"  stroke="#9B8B5E" stroke-width="1.8" opacity="0.45" stroke-linecap="round"/>
-      <path d="M576 676 L576 628 M576 676 L528 676" stroke="#9B8B5E" stroke-width="1.8" opacity="0.45" stroke-linecap="round"/>
+           ══════════════════════════════════════════════════ -->
+      <path d="M22 22 L22 65 M22 22 L65 22"     stroke="#9B8B5E" stroke-width="2.2" opacity="0.48" stroke-linecap="round"/>
+      <path d="M578 22 L578 65 M578 22 L535 22"  stroke="#9B8B5E" stroke-width="2.2" opacity="0.48" stroke-linecap="round"/>
+      <path d="M22 678 L22 635 M22 678 L65 678"  stroke="#9B8B5E" stroke-width="2.2" opacity="0.48" stroke-linecap="round"/>
+      <path d="M578 678 L578 635 M578 678 L535 678" stroke="#9B8B5E" stroke-width="2.2" opacity="0.48" stroke-linecap="round"/>
 
-      <!-- ── Large seal stamp — bottom right ── -->
-      <g transform="translate(502, 590)" opacity="0.42">
-        <rect x="0" y="0" width="64" height="64" fill="#C03020" opacity="0.1"/>
-        <rect x="0" y="0" width="64" height="64" fill="none" stroke="#C03020" stroke-width="2"/>
-        <rect x="4" y="4" width="56" height="56" fill="none" stroke="#C03020" stroke-width="0.8" opacity="0.6"/>
-        <text x="6"  y="30" font-size="20" fill="#C03020" font-family="Georgia, 'Noto Serif SC', serif" font-weight="bold">引</text>
-        <text x="6"  y="56" font-size="20" fill="#C03020" font-family="Georgia, 'Noto Serif SC', serif" font-weight="bold">用</text>
-        <text x="34" y="30" font-size="20" fill="#C03020" font-family="Georgia, 'Noto Serif SC', serif" font-weight="bold">文</text>
-        <text x="34" y="56" font-size="20" fill="#C03020" font-family="Georgia, 'Noto Serif SC', serif" font-weight="bold">献</text>
+      <!-- ── Seal stamp bottom right ── -->
+      <g transform="translate(498, 598)" opacity="0.5">
+        <rect x="0" y="0" width="62" height="62" fill="#C8281E" opacity="0.1"/>
+        <rect x="0" y="0" width="62" height="62" fill="none" stroke="#C8281E" stroke-width="2.2"/>
+        <rect x="4" y="4" width="54" height="54" fill="none" stroke="#C8281E" stroke-width="0.8" opacity="0.5"/>
+        <text x="5"  y="30" font-size="19" fill="#C8281E" font-family="Georgia,serif" font-weight="bold">引</text>
+        <text x="5"  y="55" font-size="19" fill="#C8281E" font-family="Georgia,serif" font-weight="bold">用</text>
+        <text x="33" y="30" font-size="19" fill="#C8281E" font-family="Georgia,serif" font-weight="bold">文</text>
+        <text x="33" y="55" font-size="19" fill="#C8281E" font-family="Georgia,serif" font-weight="bold">献</text>
       </g>
 
-      <!-- ── Fig label ── -->
-      <text x="30" y="688" font-family="'Lato', 'Helvetica Neue', sans-serif"
-            font-size="9" letter-spacing="3" fill="#9B8B5E" opacity="0.6"
-            text-transform="uppercase">(fig. 01) — THE SCHOLAR'S GARDEN</text>
+      <!-- ── Fig caption ── -->
+      <text x="28" y="690"
+            font-family="'Lato','Helvetica Neue',sans-serif"
+            font-size="8.5" letter-spacing="2.5"
+            fill="#9B8B5E" opacity="0.55">(fig. 01) — THE SCHOLAR SAMURAI</text>
 
     </svg>
 
